@@ -1,0 +1,5 @@
+{
+  "name": "Cosmic chat",
+  "description": "A branching chat interface allowing users to create parallel conversation timelines with AI, visualized as a constellation map.",
+  "requestFramePermissions": []
+}

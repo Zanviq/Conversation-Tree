@@ -84,6 +84,8 @@ const UniverseMap: React.FC<UniverseMapProps> = ({
   
   // Track previous session ID to detect when to hard reset
   const prevSessionIdRef = useRef<string | null>(activeSessionId);
+  // Track previous head ID for auto-recentering logic. Start null to trigger on first valid ID.
+  const prevHeadIdRef = useRef<string | null>(null);
 
   // --- Helpers ---
   const isValidTarget = (targetId: string) => {
@@ -353,7 +355,7 @@ const UniverseMap: React.FC<UniverseMapProps> = ({
   }, [activeSessionId, dimensions.width, dimensions.height, isReady]); 
 
 
-  // --- EFFECT 2: Data Rendering ---
+  // --- EFFECT 2: Data Rendering & Auto-Recenter ---
   useEffect(() => {
     if (!data || !contentGRef.current || !isReady) return;
 
@@ -911,10 +913,15 @@ const UniverseMap: React.FC<UniverseMapProps> = ({
         });
 
     nodeUpdate.call(drag as any);
-    // Remove default click from drag to avoid conflict with our explicit click handler
-    // nodeUpdate.on("click", null); // Handled inside the each loop now
+    
+    // Auto-recenter if head changed
+    // We do this inside this effect because we know node positions are now updated
+    if (currentHeadId && currentHeadId !== prevHeadIdRef.current) {
+         prevHeadIdRef.current = currentHeadId;
+         handleRecenter();
+    }
 
-  }, [data, processingNodeId, isReady, connectingSourceId, isTrackSelectionMode, selectedTrackIds, showingTracksForNodeId]); 
+  }, [data, processingNodeId, isReady, connectingSourceId, isTrackSelectionMode, selectedTrackIds, showingTracksForNodeId, currentHeadId, dimensions.width, dimensions.height]); 
 
   // --- Dynamic Connection Line ---
   useEffect(() => {

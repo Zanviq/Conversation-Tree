@@ -1,4 +1,3 @@
-
 import { Message, TreeNode } from "../types";
 
 /**
@@ -162,9 +161,13 @@ export const buildHierarchy = (
     // Determine if this turn is in the current active path
     const isCurrentPath = activePathIds.has(nodeId);
 
-    // Determine Label
-    let nodeName = userMsg.content;
-    if ((!nodeName || nodeName.trim() === '') && userMsg.attachments && userMsg.attachments.length > 0) {
+    // Determine Label: Use summary if available, else truncate content
+    let nodeName = "";
+    if (userMsg.summary) {
+        nodeName = userMsg.summary;
+    } else if (userMsg.content && userMsg.content.trim() !== '') {
+        nodeName = userMsg.content.substring(0, 18) + (userMsg.content.length > 18 ? "..." : "");
+    } else if (userMsg.attachments && userMsg.attachments.length > 0) {
         nodeName = "Image";
     }
 
@@ -180,7 +183,7 @@ export const buildHierarchy = (
     const node: TreeNode = {
       id: nodeId,
       // Label the node with the User's topic
-      name: nodeName.substring(0, 18) + (nodeName.length > 18 ? "..." : ""),
+      name: nodeName,
       role: 'model', // We treat the finished pair as a Model node for visualization color
       isCurrentPath,
       connections: connections.length > 0 ? connections : undefined,

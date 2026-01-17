@@ -62,3 +62,20 @@ export const streamGeminiResponse = async (
     onChunk("\n[Connection to the stars interrupted...]");
   }
 };
+
+export const generateNodeLabel = async (text: string): Promise<string> => {
+  if (!text || text.trim().length === 0) return "";
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: `Summarize the following user input into a very short label (max 3-5 words) to be used as a name for a node in a conversation graph. Identify the language of the input and generate the label in the SAME language. Return only the label text. Input: "${text}"`,
+      config: {
+        responseMimeType: "text/plain",
+      },
+    });
+    return response.text?.trim() || "";
+  } catch (error) {
+    console.error("Label generation failed:", error);
+    return "";
+  }
+};

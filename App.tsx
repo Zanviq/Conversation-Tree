@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import ChatInterface from './components/ChatInterface';
 import UniverseMap from './components/UniverseMap';
 import { Message, Session, Attachment } from './types';
-import { streamGeminiResponse } from './services/geminiService';
+import { streamGeminiResponse, generateNodeLabel } from './services/geminiService';
 import { getThreadFromHead, buildHierarchy, findLCA } from './utils/graphUtils';
 
 const STORAGE_KEY_SESSIONS = 'cosmic_fork_sessions';
@@ -259,6 +259,20 @@ const App: React.FC = () => {
       };
     }));
 
+    // Trigger Node Label Generation (Summary)
+    generateNodeLabel(userText).then(summary => {
+        if (!summary) return;
+        setSessions(prev => prev.map(s => {
+            if (s.id !== sessionId) return s;
+            const msg = s.messageMap[userMsgId];
+            if (!msg) return s;
+            return {
+                ...s,
+                messageMap: { ...s.messageMap, [userMsgId]: { ...msg, summary } }
+            };
+        }));
+    });
+
     const currentMap = sessions.find(s => s.id === sessionId)?.messageMap || {};
     const tempMap = { ...currentMap, [userMsgId]: userMsg };
     
@@ -346,6 +360,20 @@ const App: React.FC = () => {
 
       setSessions(prev => [newSession, ...prev]);
       setActiveSessionId(newSessionId);
+
+      // Trigger Label Generation
+      generateNodeLabel(text).then(summary => {
+         if (!summary) return;
+         setSessions(prev => prev.map(s => {
+             if (s.id !== newSessionId) return s;
+             const msg = s.messageMap[userMsgId];
+             if (!msg) return s;
+             return {
+                 ...s,
+                 messageMap: { ...s.messageMap, [userMsgId]: { ...msg, summary } }
+             };
+         }));
+      });
 
       // History is just the user message
       const history = [userMsg];
@@ -594,6 +622,20 @@ const App: React.FC = () => {
 
     // Start Streaming
     if (originalUserMsgId) {
+        // Trigger Summary for Edited Text
+        generateNodeLabel(newText).then(summary => {
+            if(!summary) return;
+            setSessions(prev => prev.map(s => {
+                if (s.id !== activeSessionId) return s;
+                const msg = s.messageMap[newUserMsgId];
+                if (!msg) return s;
+                return {
+                    ...s,
+                    messageMap: { ...s.messageMap, [newUserMsgId]: { ...msg, summary } }
+                }
+            }));
+        });
+
         const history = getThreadFromHead(streamParentId, currentSession?.messageMap || {}, true);
         history.push({
             id: newUserMsgId,

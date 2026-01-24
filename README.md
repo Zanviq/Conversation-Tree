@@ -20,14 +20,6 @@
 npm install
 ```
 
-### 환경 설정
-
-`.env.local` 파일을 생성하고 Gemini API 키를 설정합니다:
-
-```
-VITE_GEMINI_API_KEY=your_gemini_api_key_here
-```
-
 ### 실행
 
 ```bash
@@ -40,6 +32,13 @@ npm run build
 # 빌드 결과물 미리보기
 npm run preview
 ```
+
+### API 설정
+
+1. 앱을 실행하면 **Landing Page**가 표시됩니다
+2. **Gemini API Key** 입력 필드에 [Google Gemini API 키](https://aistudio.google.com/app/apikey)를 입력합니다
+3. "Connect" 버튼을 클릭하여 유효성을 검증합니다
+4. 유효한 키는 자동으로 저장되어 다음 접속 시 자동으로 로드됩니다
 
 ## 🛠 기술 스택
 

@@ -1,59 +1,59 @@
 [
   {
-    "id": "29e67ad8-2794-4167-a304-c0e907f82e2c",
-    "title": "반가받",
-    "rootMessageId": "155d0cf9-9b43-45d1-a6d5-ea5631615aeb",
+    "id": "a29017de-e8a9-411a-ae00-61da74a57279",
+    "title": "안녕",
+    "rootMessageId": "851aa10b-8865-4094-bb4a-f11e292c8466",
     "messageMap": {
-      "155d0cf9-9b43-45d1-a6d5-ea5631615aeb": {
-        "id": "155d0cf9-9b43-45d1-a6d5-ea5631615aeb",
-        "role": "user",
-        "content": "반가받",
-        "parentId": null,
-        "childrenIds": [
-          "ed0efdcf-1210-448c-b9b3-22593f299768"
-        ],
-        "timestamp": 1769324959224,
-        "summary": "반가운 인사"
-      },
-      "ed0efdcf-1210-448c-b9b3-22593f299768": {
-        "id": "ed0efdcf-1210-448c-b9b3-22593f299768",
-        "role": "model",
-        "content": "안녕하세요! 반갑습니다. 무엇을 도와드릴까요?",
-        "parentId": "155d0cf9-9b43-45d1-a6d5-ea5631615aeb",
-        "childrenIds": [
-          "865df48b-1f36-47d5-90e7-6dc7cf3bf073"
-        ],
-        "timestamp": 1769324959225
-      },
-      "865df48b-1f36-47d5-90e7-6dc7cf3bf073": {
-        "id": "865df48b-1f36-47d5-90e7-6dc7cf3bf073",
+      "851aa10b-8865-4094-bb4a-f11e292c8466": {
+        "id": "851aa10b-8865-4094-bb4a-f11e292c8466",
         "role": "user",
         "content": "안녕",
-        "parentId": "ed0efdcf-1210-448c-b9b3-22593f299768",
+        "parentId": null,
         "childrenIds": [
-          "e38e2b34-09ec-4374-a8e7-c34207e53487"
+          "618e6303-8172-486e-9e05-4ef11be9f865"
         ],
-        "timestamp": 1769324962276,
-        "position": {
-          "x": 0,
-          "y": 100
-        },
-        "summary": "첫 인사"
+        "timestamp": 1769325507739,
+        "summary": "인사"
       },
-      "e38e2b34-09ec-4374-a8e7-c34207e53487": {
-        "id": "e38e2b34-09ec-4374-a8e7-c34207e53487",
+      "618e6303-8172-486e-9e05-4ef11be9f865": {
+        "id": "618e6303-8172-486e-9e05-4ef11be9f865",
         "role": "model",
         "content": "안녕하세요! 무엇을 도와드릴까요?",
-        "parentId": "865df48b-1f36-47d5-90e7-6dc7cf3bf073",
-        "childrenIds": [],
-        "timestamp": 1769324962277,
+        "parentId": "851aa10b-8865-4094-bb4a-f11e292c8466",
+        "childrenIds": [
+          "2d2c9d0a-e0d4-41cf-8f61-37e3eaae9cc1"
+        ],
+        "timestamp": 1769325507740
+      },
+      "2d2c9d0a-e0d4-41cf-8f61-37e3eaae9cc1": {
+        "id": "2d2c9d0a-e0d4-41cf-8f61-37e3eaae9cc1",
+        "role": "user",
+        "content": "반가워",
+        "parentId": "618e6303-8172-486e-9e05-4ef11be9f865",
+        "childrenIds": [
+          "dc05b4d7-7022-42c7-b4b1-d17d8d532ec7"
+        ],
+        "timestamp": 1769325511118,
         "position": {
-          "x": 0,
-          "y": 100
+          "x": -94.00000214576721,
+          "y": 184.99999237060547
+        },
+        "summary": "반가운 인사"
+      },
+      "dc05b4d7-7022-42c7-b4b1-d17d8d532ec7": {
+        "id": "dc05b4d7-7022-42c7-b4b1-d17d8d532ec7",
+        "role": "model",
+        "content": "저도 반가워요! 무엇을 도와드릴까요?",
+        "parentId": "2d2c9d0a-e0d4-41cf-8f61-37e3eaae9cc1",
+        "childrenIds": [],
+        "timestamp": 1769325511119,
+        "position": {
+          "x": -94.00000214576721,
+          "y": 184.99999237060547
         }
       }
     },
-    "currentHeadId": "e38e2b34-09ec-4374-a8e7-c34207e53487",
-    "lastModified": 1769324962276
+    "currentHeadId": "dc05b4d7-7022-42c7-b4b1-d17d8d532ec7",
+    "lastModified": 1769325559237
   }
 ]

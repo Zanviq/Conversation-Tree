@@ -1,6 +1,3 @@
-
-import * as d3 from 'd3';
-
 export interface Attachment {
   mimeType: string;
   data: string; // Base64 string (raw, without data URI prefix)
@@ -37,11 +34,6 @@ export interface Session {
   // The ID of the message currently at the bottom of the view (the "active" leaf)
   currentHeadId: string | null;
   lastModified: number;
-}
-
-export interface D3Node extends d3.HierarchyPointNode<TreeNode> {
-  x: number;
-  y: number;
 }
 
 export interface TreeNode {

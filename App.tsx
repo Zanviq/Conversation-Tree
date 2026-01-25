@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Plus, MessageSquare, Menu, X, GitGraph, LogOut, Home } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
+import { Plus, MessageSquare, Menu, X, GitGraph, Home } from 'lucide-react';
 import ChatInterface from './components/ChatInterface';
 import UniverseMap from './components/UniverseMap';
 import { LandingPage } from './components/LandingPage';
@@ -8,9 +7,6 @@ import { Message, Session, Attachment } from './types';
 import { streamGeminiResponse, generateNodeLabel } from './services/geminiService';
 import { getThreadFromHead, buildHierarchy, findLCA } from './utils/graphUtils';
 import { getStorageAdapter } from './services/storageService';
-
-const STORAGE_KEY_SESSIONS = 'cosmic_fork_sessions';
-const STORAGE_KEY_ACTIVE_ID = 'cosmic_fork_active_id';
 
 const App: React.FC = () => {
   // --- Landing State ---
@@ -50,32 +46,21 @@ const App: React.FC = () => {
   }, [hasStarted]);
 
   useEffect(() => {
-      const saveModel = async () => {
+      const saveModels = async () => {
         try {
-          await storageAdapter.current.saveModel('cosmic_chat_model', chatModel);
+          await Promise.all([
+            storageAdapter.current.saveModel('cosmic_chat_model', chatModel),
+            storageAdapter.current.saveModel('cosmic_label_model', labelModel)
+          ]);
         } catch (e) {
-          console.error("Failed to save chat model", e);
-          showToast('채팅 모델 저장 실패', 'error');
+          console.error("Failed to save models", e);
+          showToast('모델 저장 실패', 'error');
         }
       };
       if (hasStarted) {
-        saveModel();
+        saveModels();
       }
-  }, [chatModel, hasStarted]);
-
-  useEffect(() => {
-      const saveModel = async () => {
-        try {
-          await storageAdapter.current.saveModel('cosmic_label_model', labelModel);
-        } catch (e) {
-          console.error("Failed to save label model", e);
-          showToast('라벨 모델 저장 실패', 'error');
-        }
-      };
-      if (hasStarted) {
-        saveModel();
-      }
-  }, [labelModel, hasStarted]);
+  }, [chatModel, labelModel, hasStarted]);
 
   // --- State ---
   const [sessions, setSessions] = useState<Session[]>([]);

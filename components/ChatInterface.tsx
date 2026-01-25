@@ -36,8 +36,8 @@ interface ChatPair {
   aiMsg?: Message;
 }
 
-// Track Colors matching Map
-const TRACK_COLORS = [
+// Track Colors (Tailwind classes for UI and Hex for inline styles)
+const TRACK_COLORS_CLASSES = [
     'border-nebula-500 text-nebula-400 bg-nebula-950', 
     'border-cyan-500 text-cyan-400 bg-cyan-950', 
     'border-amber-500 text-amber-400 bg-amber-950', 
@@ -560,7 +560,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             {isTrackSelectionMode && (
                 <div className="flex flex-wrap gap-2 mb-2 animate-in slide-in-from-bottom-2 fade-in">
                     {Array.from({ length: Math.max(1, selectedTrackCount) }).map((_, i) => (
-                        <div key={i} className={`flex items-center gap-1 px-2 py-1 rounded text-xs border ${TRACK_COLORS[i % TRACK_COLORS.length]}`}>
+                        <div key={i} className={`flex items-center gap-1 px-2 py-1 rounded text-xs border ${TRACK_COLORS_CLASSES[i % TRACK_COLORS_CLASSES.length]}`}>
                             <GitMerge size={12} />
                             <span className="font-bold">{String.fromCharCode(65 + i)}</span>
                             {i === 0 && <span className="opacity-70 ml-1">(Current)</span>}

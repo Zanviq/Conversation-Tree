@@ -95,8 +95,6 @@ export class BrowserStorageAdapter implements StorageAdapter {
 
 // Local File Adapter using Backend API
 export class LocalFileStorageAdapter implements StorageAdapter {
-  private readonly DATA_DIR_NAME = 'cosmic-chat-data';
-
   isReady(): boolean {
     return true; // Always ready since we use backend API
   }

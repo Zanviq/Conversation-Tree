@@ -83,6 +83,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const [editingNodeId, setEditingNodeId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
   const [editMode, setEditMode] = useState<'replace' | 'fork' | null>(null);
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+  const [showScrollButton, setShowScrollButton] = useState(false);
+  const [buttonStyle, setButtonStyle] = useState<{ right: string }>({ right: '1rem' });
 
   // Model Menu State
   const [showModelMenu, setShowModelMenu] = useState(false);
@@ -94,11 +97,68 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const bottomRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const hasUserScrolledRef = useRef(false);
 
-  // Scroll to bottom
+  // Update button position when scroll container size changes
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isProcessing, attachments]); 
+    const updateButtonPosition = () => {
+      if (scrollContainerRef.current) {
+        const rect = scrollContainerRef.current.getBoundingClientRect();
+        const buttonRightValue = window.innerWidth - rect.right + 16; // 16px offset
+        setButtonStyle({ right: `${buttonRightValue}px` });
+      }
+    };
+
+    updateButtonPosition();
+    const resizeObserver = new ResizeObserver(updateButtonPosition);
+    if (scrollContainerRef.current) {
+      resizeObserver.observe(scrollContainerRef.current);
+    }
+    window.addEventListener('resize', updateButtonPosition);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener('resize', updateButtonPosition);
+    };
+  }, []);
+
+  // Scroll to bottom only on initial message or when user is at bottom
+  useEffect(() => {
+    if (shouldAutoScroll && scrollContainerRef.current) {
+      setTimeout(() => {
+        scrollContainerRef.current?.scrollIntoView({ behavior: "smooth" });
+        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 50);
+    }
+  }, [shouldAutoScroll]);
+
+  // Auto-scroll when new messages arrive (only if user hasn't scrolled up)
+  useEffect(() => {
+    if (!hasUserScrolledRef.current && scrollContainerRef.current) {
+      setTimeout(() => {
+        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 50);
+    }
+  }, [messages]);
+
+  // Handle scroll events to detect user scrolling
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const target = e.currentTarget;
+    const { scrollHeight, scrollTop, clientHeight } = target;
+    const isNearBottom = scrollHeight - scrollTop - clientHeight < 110;
+    
+    // Only update state if the scroll position significantly changed
+    if (isNearBottom && hasUserScrolledRef.current) {
+      hasUserScrolledRef.current = false;
+      setShouldAutoScroll(true);
+    } else if (!isNearBottom && !hasUserScrolledRef.current) {
+      hasUserScrolledRef.current = true;
+      setShouldAutoScroll(false);
+    }
+    
+    setShowScrollButton(!isNearBottom);
+  }; 
 
   // Close model menu on outside click
   useEffect(() => {
@@ -294,7 +354,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 md:p-8 pb-20 space-y-8">
+      <div 
+        ref={scrollContainerRef}
+        onScroll={handleScroll}
+        className="flex-1 overflow-y-auto p-4 md:p-8 pb-20 space-y-8 relative"
+      >
         {pairs.length === 0 && (
            <div className="h-full flex flex-col items-center justify-center text-gray-500 opacity-50 space-y-4">
                <div className="w-24 h-24 rounded-full bg-space-800 flex items-center justify-center animate-pulse-slow">
@@ -449,6 +513,23 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             );
         })}
         <div ref={bottomRef} />
+        
+        {/* Scroll to Bottom Button */}
+        {showScrollButton && (
+          <button
+            onClick={() => {
+              setShouldAutoScroll(true);
+              bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+            }}
+            style={buttonStyle}
+            className="fixed bottom-24 bg-nebula-600 hover:bg-nebula-500 text-white rounded-full p-2 shadow-lg transition-all duration-200 animate-in slide-in-from-bottom-2 fade-in z-40"
+            title="Scroll to new messages"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+          </button>
+        )}
       </div>
 
       {/* Input Area */}
@@ -533,7 +614,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                     <button 
                         type="submit"
                         disabled={(!input.trim() && attachments.length === 0) || isProcessing}
-                        className="absolute right-2 bottom-4 aspect-square w-10 h-10 flex items-center justify-center bg-nebula-600 hover:bg-nebula-500 disabled:bg-space-800 disabled:text-gray-600 text-white rounded-lg transition-colors"
+                        className="absolute right-4 bottom-4 aspect-square w-10 h-10 flex items-center justify-center bg-nebula-600 hover:bg-nebula-500 disabled:bg-space-800 disabled:text-gray-600 text-white rounded-lg transition-colors"
                     >
                         <Send size={18} />
                     </button>

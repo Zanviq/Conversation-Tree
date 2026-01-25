@@ -16,6 +16,7 @@ interface UniverseMapProps {
   selectedTrackIds?: string[];
   messageMap?: Record<string, Message>;
   currentHeadId: string | null;
+  isVisible?: boolean; // Whether the sidebar is visible
 }
 
 interface Point { x: number; y: number; }
@@ -53,7 +54,8 @@ const UniverseMap: React.FC<UniverseMapProps> = ({
     isTrackSelectionMode = false,
     selectedTrackIds = [],
     messageMap,
-    currentHeadId
+    currentHeadId,
+    isVisible = true
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -737,6 +739,11 @@ const UniverseMap: React.FC<UniverseMapProps> = ({
 
     nodeUpdate.attr("transform", (d) => `translate(${d.x},${d.y})`);
 
+    // Update nodePositionsRef with current positions for connection rendering
+    nodeUpdate.each(function(d) {
+        nodePositionsRef.current[d.data.id] = { x: d.x, y: d.y };
+    });
+
     // Dynamic Coloring and Styling
     nodeUpdate.each(function(d) {
         const sel = d3.select(this);
@@ -979,7 +986,7 @@ const UniverseMap: React.FC<UniverseMapProps> = ({
          handleRecenter();
     }
 
-  }, [data, processingNodeId, isReady, connectingSourceId, isTrackSelectionMode, selectedTrackIds, showingTracksForNodeId, currentHeadId, dimensions.width, dimensions.height, messageMap, onPositionUpdate]); 
+  }, [data, processingNodeId, isReady, connectingSourceId, isTrackSelectionMode, selectedTrackIds, showingTracksForNodeId, currentHeadId, dimensions.width, dimensions.height, messageMap, onPositionUpdate, isVisible]); 
 
   // --- Dynamic Connection Line ---
   useEffect(() => {

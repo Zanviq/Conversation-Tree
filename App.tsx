@@ -1051,6 +1051,7 @@ const App: React.FC = () => {
                         selectedTrackIds={selectedTrackIds}
                         messageMap={activeSession?.messageMap}
                         currentHeadId={activeSession?.currentHeadId ?? null}
+                        isVisible={rightSidebarOpen}
                     />
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full text-gray-600 text-sm px-8 text-center">

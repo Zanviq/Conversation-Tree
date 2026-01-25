@@ -502,20 +502,21 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="mb-2 p-2 text-gray-400 hover:text-nebula-400 hover:bg-space-800 rounded-lg transition-colors"
+                    className="mb-4 p-2 text-gray-400 hover:text-nebula-400 hover:bg-space-800 rounded-lg transition-colors"
                     title="Attach Image"
                 >
-                    <Paperclip size={20} />
+                    <Paperclip size={22} />
                 </button>
 
                 {/* Track Comparison Button */}
                 <button
                     type="button"
                     onClick={onToggleTrackSelection}
-                    className={`mb-2 p-2 rounded-lg transition-colors ${isTrackSelectionMode ? 'bg-space-800 text-cyan-400 ring-1 ring-cyan-500/50' : 'text-gray-400 hover:text-cyan-400 hover:bg-space-800'}`}
-                    title="Compare Timelines"
+                    disabled={messages.length <= 1}
+                    className={`mb-4 p-2 rounded-lg transition-colors ${messages.length <= 1 ? 'opacity-40 cursor-not-allowed text-gray-600' : isTrackSelectionMode ? 'bg-space-800 text-cyan-400 ring-1 ring-cyan-500/50' : 'text-gray-400 hover:text-cyan-400 hover:bg-space-800'}`}
+                    title={messages.length <= 1 ? "Available after first AI response" : "Compare Timelines"}
                 >
-                    <GitMerge size={20} />
+                    <GitMerge size={22} />
                 </button>
 
                 <div className="relative flex-1">
@@ -526,13 +527,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                         onKeyDown={handleKeyDown}
                         onPaste={handlePaste}
                         rows={1}
-                        placeholder={isTrackSelectionMode ? "Ask AI to compare these timelines..." : "Send a message to the cosmos..."}
+                        placeholder={isTrackSelectionMode ? "Ask AI to compare these timelines..." : ""}
                         className="w-full bg-space-950 border border-space-700 text-gray-200 rounded-xl px-4 py-4 pr-12 focus:outline-none focus:ring-2 focus:ring-nebula-500/50 focus:border-nebula-500 transition-all placeholder-gray-600 resize-none min-h-[56px] max-h-[200px]"
                     />
                     <button 
                         type="submit"
                         disabled={(!input.trim() && attachments.length === 0) || isProcessing}
-                        className="absolute right-2 bottom-2 aspect-square w-10 h-10 flex items-center justify-center bg-nebula-600 hover:bg-nebula-500 disabled:bg-space-800 disabled:text-gray-600 text-white rounded-lg transition-colors"
+                        className="absolute right-2 bottom-4 aspect-square w-10 h-10 flex items-center justify-center bg-nebula-600 hover:bg-nebula-500 disabled:bg-space-800 disabled:text-gray-600 text-white rounded-lg transition-colors"
                     >
                         <Send size={18} />
                     </button>

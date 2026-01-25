@@ -894,7 +894,7 @@ const App: React.FC = () => {
               <span className="truncate flex-1">{session.title}</span>
               <button 
                  onClick={(e) => deleteSession(e, session.id)}
-                 className="opacity-0 group-hover:opacity-100 hover:text-red-400 p-1"
+                 className="text-gray-400 hover:text-red-400 p-1 transition-colors"
               >
                   <X size={14}/>
               </button>

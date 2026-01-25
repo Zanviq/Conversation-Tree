@@ -456,8 +456,11 @@ const UniverseMap: React.FC<UniverseMapProps> = ({
             }
             d.x = newX;
             d.y = newY;
-            nodePositionsRef.current[d.data.id] = { x: newX, y: newY };
         }
+        // Always update nodePositionsRef with the final position
+        // This ensures connection links have access to all node positions
+        // BEFORE they are rendered (connections are drawn before nodes)
+        nodePositionsRef.current[d.data.id] = { x: d.x, y: d.y };
     });
 
     // --- PREPARE HIGHLIGHT DATA FOR CONTEXT TRACKS ---
@@ -738,11 +741,6 @@ const UniverseMap: React.FC<UniverseMapProps> = ({
     const nodeUpdate = nodeEnter.merge(nodesSelection);
 
     nodeUpdate.attr("transform", (d) => `translate(${d.x},${d.y})`);
-
-    // Update nodePositionsRef with current positions for connection rendering
-    nodeUpdate.each(function(d) {
-        nodePositionsRef.current[d.data.id] = { x: d.x, y: d.y };
-    });
 
     // Dynamic Coloring and Styling
     nodeUpdate.each(function(d) {

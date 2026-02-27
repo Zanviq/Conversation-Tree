@@ -295,7 +295,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
         <div className="flex items-center gap-2">
            <span className="text-nebula-400"><Sparkles size={18} /></span>
-           <h2 className="text-gray-100 font-medium">Cosmic Chat</h2>
+           <h2 className="text-gray-100 font-medium">Conversation-Tree</h2>
         </div>
 
         {/* Model Selection Button */}

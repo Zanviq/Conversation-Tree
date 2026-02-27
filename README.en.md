@@ -1,8 +1,8 @@
 <div align="center">
 
-# 🌌 Cosmic Chat
+# 🌳 Conversation-Tree
 
-**Explore conversations like constellations**
+**Explore conversations like a tree**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -21,7 +21,7 @@
 
 > *"A conversation is not a linear record, but a universe of infinitely branching possibilities."*
 
-This project was born from a simple thought: "What if I had asked differently?" Traditional AI chatbots record conversations in a straight line, but our thinking is far more complex. When you want to explore multiple directions from a single question while preserving context — Cosmic Chat is the answer.
+This project was born from a simple thought: "What if I had asked differently?" Traditional AI chatbots record conversations in a straight line, but our thinking is far more complex. When you want to explore multiple directions from a single question while preserving context — Conversation-Tree is the answer.
 
 While visualizing conversations with D3.js, I wanted to create an experience like drawing constellations in the cosmos. Each node represents a moment in the dialogue, and each connection represents the flow of thought. I hope the process of creating your own map of ideas becomes a creative journey in itself.
 
@@ -67,8 +67,8 @@ While visualizing conversations with D3.js, I wanted to create an experience lik
 
 ```bash
 # Clone repository
-git clone https://github.com/your-username/cosmic-chat.git
-cd cosmic-chat
+git clone https://github.com/your-username/Conversation-Tree.git
+cd Conversation-Tree
 
 # Install dependencies
 npm install
@@ -111,7 +111,7 @@ npm run preview
 ## 📁 Project Structure
 
 ```
-cosmic-chat/
+conversation-tree/
 ├── 📂 components/
 │   ├── ChatInterface.tsx    # Chat UI and message rendering
 │   ├── UniverseMap.tsx      # D3.js-based conversation visualization
@@ -121,7 +121,7 @@ cosmic-chat/
 │   └── storageService.ts    # Local/browser storage management
 ├── 📂 utils/
 │   └── graphUtils.ts        # Graph traversal and tree building
-├── 📂 cosmic-chat-data/     # Session data (auto-generated)
+├── 📂 conversation-tree-data/     # Session data (auto-generated)
 ├── App.tsx                  # Main app component
 ├── types.ts                 # TypeScript type definitions
 └── vite.config.ts           # Vite config and API plugin

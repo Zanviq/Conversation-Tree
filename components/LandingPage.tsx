@@ -94,11 +94,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onError }) =>
 
                   <div className="space-y-4 max-w-2xl">
                     <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-tight">
-                        <span className="text-white">Cosmic</span>
-                        <span className="block text-transparent bg-clip-text bg-gradient-to-r from-nebula-400 to-cyan-400">Fork</span>
+                        <span className="text-white">Conversation</span>
+                        <span className="block text-transparent bg-clip-text bg-gradient-to-r from-nebula-400 to-cyan-400">Tree</span>
                     </h1>
                     <p className="text-lg md:text-xl text-gray-400 leading-relaxed max-w-lg mx-auto lg:mx-0">
-                        Map the constellations of your thought. Explore parallel timelines, branch conversations, and merge ideas with Gemini intelligence.
+                        Let your conversations grow outward like the branches of a tree. Engage with AI instances that carry separated memories within a single session, and unlock deeper learning and a wealth of new ideas.
                     </p>
                   </div>
 
@@ -186,7 +186,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onError }) =>
                        <div className="w-10 h-10 rounded-lg bg-space-950 border border-space-800 flex items-center justify-center mb-4 group-hover:border-amber-500/50 transition-colors">
                            <Zap className="text-amber-400" size={20} />
                        </div>
-                       <h3 className="font-semibold text-gray-100 text-lg mb-2">Gemini 3 Flash</h3>
+                       <h3 className="font-semibold text-gray-100 text-lg mb-2">Gemini Model</h3>
                        <p className="text-sm text-gray-400 leading-relaxed">
                            Powered by Google's latest models for ultra-low latency and high-reasoning capabilities.
                        </p>
@@ -199,7 +199,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onError }) =>
                        </div>
                        <h3 className="font-semibold text-gray-100 text-lg mb-2">Visual Mapping</h3>
                        <p className="text-sm text-gray-400 leading-relaxed">
-                           Navigate your conversation as a constellation map. Zoom, pan, and restructure your thoughts.
+                           Explore the conversation with a visual mapping map. Use zoom, pan, and reorganize features.
                        </p>
                    </div>
               </div>

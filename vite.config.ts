@@ -3,7 +3,7 @@ import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import fs from 'fs';
 
-const DATA_DIR = path.join(process.cwd(), 'cosmic-chat-data');
+const DATA_DIR = path.join(process.cwd(), 'conversation-tree-data');
 
 // Custom plugin to handle API requests
 function storageApiPlugin() {

@@ -1,8 +1,8 @@
 <div align="center">
 
-# 🌌 Cosmic Chat
+# 🌳 Conversation-Tree
 
-**会話を星座のように探検しよう**
+**会話をツリーのように探検しよう**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -21,7 +21,7 @@
 
 > *「会話は単なる線形の記録ではなく、無限に分岐する可能性の宇宙です。」*
 
-このプロジェクトは「もし違う質問をしていたら？」という考えから始まりました。従来のAIチャットボットは会話を一直線に記録しますが、私たちの思考はもっと複雑です。一つの質問から複数の方向を探求したい時、以前のコンテキストを維持しながら新しい可能性を開きたい時 — Cosmic Chatがその答えです。
+このプロジェクトは「もし違う質問をしていたら？」という考えから始まりました。従来のAIチャットボットは会話を一直線に記録しますが、私たちの思考はもっと複雑です。一つの質問から複数の方向を探求したい時、以前のコンテキストを維持しながら新しい可能性を開きたい時 — Conversation-Treeがその答えです。
 
 D3.jsで会話を可視化しながら、まるで宇宙の星座を描くような体験を作りたいと思いました。各ノードは対話の一瞬であり、接続線は思考の流れです。ユーザーが自分だけの思考マップを作っていく過程そのものが、創造的な旅になることを願っています。
 
@@ -67,8 +67,8 @@ D3.jsで会話を可視化しながら、まるで宇宙の星座を描くよう
 
 ```bash
 # リポジトリをクローン
-git clone https://github.com/your-username/cosmic-chat.git
-cd cosmic-chat
+git clone https://github.com/your-username/Conversation-Tree.git
+cd Conversation-Tree
 
 # 依存関係をインストール
 npm install
@@ -111,7 +111,7 @@ npm run preview
 ## 📁 プロジェクト構造
 
 ```
-cosmic-chat/
+conversation-tree/
 ├── 📂 components/
 │   ├── ChatInterface.tsx    # チャットUIとメッセージレンダリング
 │   ├── UniverseMap.tsx      # D3.jsベースの会話可視化
@@ -121,7 +121,7 @@ cosmic-chat/
 │   └── storageService.ts    # ローカル/ブラウザストレージ管理
 ├── 📂 utils/
 │   └── graphUtils.ts        # グラフ走査とツリー構築
-├── 📂 cosmic-chat-data/     # セッションデータ（自動生成）
+├── 📂 conversation-tree-data/     # セッションデータ（自動生成）
 ├── App.tsx                  # メインアプリコンポーネント
 ├── types.ts                 # TypeScript型定義
 └── vite.config.ts           # Vite設定とAPIプラグイン

@@ -2,14 +2,14 @@
 
 # 🌳 Conversation-Tree
 
-**대화를 트리처럼 탐험하세요**
+**Explore conversations like a tree**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
 
-[English](./README.en.md) | [日本語](./README.ja.md) | **한국어**
+**English** | [日本語](./README.ja.md) | [한국어](./README.ko.md) | [中文](./README.zh.md) | [Español](./README.es.md)
 
 <img src="https://img.shields.io/badge/Powered%20by-Google%20Gemini-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Powered by Gemini"/>
 
@@ -17,91 +17,93 @@
 
 ---
 
-## 💭 프로젝트 소감
+## 💭 Developer's Note
 
-> *"대화는 단순한 선형 기록이 아니라, 무한히 분기하는 가능성의 우주입니다."*
+> *"A conversation is not a simple linear record, but an infinitely branching tree of possibilities."*
 
-우리의 일상에서 대형 언어 모델은 많은 지식을 전달해 줍니다. 특히 평소에 궁금한게 많던 저는 구글 검색 대신 구글 AI에게 많은 질문을 합니다. 거의 모든 인공지능 사이트에서는 *"대화방"* 을 많이 사용합니다. 물론 이는 우리가 하나의 주제에 대해서 집중적으로 인공지능에게 물어볼 수 있는 좋은 기회를 제공힙니다. 그러나 저는 이 부분에서 약간의 부족함을 느꼈고, 그 부족함이 불편함으로 다가왔습니다.
+In our daily lives, large language models provide us with a wealth of knowledge. As someone who is naturally curious, I often ask Google AI many questions instead of just using Google Search. Almost all AI platforms use a *"chat room"* format. While this provides a great opportunity to ask an AI in-depth questions about a single topic, I felt something was missing, and that missing piece became an inconvenience.
 
+Specifically, AI often tries to provide a lot of information at once. For example, if it explains things using numbered lists like 1, 2, and 3, I might ask follow-up questions about point 1, but then find it difficult to navigate back to point 2 later.
 
-이전에 저는 인공지능의 부족한 장기 기억을 보완하고자 "계층적 의미 기억 시스템"이라는 아이디어를 떠올리고, 제작해본 경험이 있었습니다. 아이디어를 확장하여, 이 프로젝트에서는 **기억을 트랙별로 분리하고 원하는 기억에서 대화를 할 수 있도록** 대화방을 제작하고자 했습니다.
+Previously, to compensate for the AI's lack of long-term memory, I came up with and built a "Hierarchical Semantic Memory System." Expanding on that idea, I wanted to create a chat interface for this project where **memories are separated by tracks, allowing you to converse within the specific memory context you want.**
 
-그래서 저는 아래와 같은 프로젝트를 기획했습니다.
-
----
-
-## ✨ 주요 기능
-
-### 🌳 멀티버스 브랜칭
-- 어떤 메시지에서든 새로운 대화 분기 생성
-- 모든 분기의 컨텍스트가 독립적으로 유지
-- "Edit & Fork" 기능으로 과거 질문 수정 후 새 경로 탐색
-
-### 🔗 메모리 연결 (Context Injection)
-- 서로 다른 대화 경로 간 메모리 공유
-- Track A의 컨텍스트를 Track B에 주입
-- 복잡한 아이디어의 교차 참조 가능
-
-### 🗺️ 인터랙티브 우주 지도
-- D3.js 기반 실시간 대화 시각화
-- 드래그로 노드 위치 자유롭게 조정
-- 줌/팬으로 전체 대화 구조 탐색
-- 현재 위치로 자동 리센터링
-
-### ⚡ Gemini 3 통합
-- Google Gemini 3 Flash/Pro 모델 지원
-- 실시간 스트리밍 응답
-- 이미지 첨부 및 멀티모달 대화
-
-### 📊 트랙 비교 모드
-- 여러 대화 경로를 동시에 선택
-- AI가 선택된 트랙들을 비교 분석
-- 병렬 타임라인 탐색
+That's how I planned this project.
+I hope many people find this feature useful. Please note that this project is not hosted as a service.
 
 ---
 
-## 🚀 시작하기
+## ✨ Features
 
-### 사전 요구사항
+### 🌳 Multiverse Branching
+- Create new conversation branches from any message
+- All branches maintain independent context
+- "Edit & Fork" feature to modify past questions and explore new paths
+
+### 🔗 Memory Connection (Context Injection)
+- Share memory between different conversation paths
+- Inject context from Track A into Track B
+- Cross-reference complex ideas
+
+### 🗺️ Interactive Universe Map
+- Real-time conversation visualization powered by D3.js
+- Freely adjust node positions by dragging
+- Explore entire conversation structure with zoom/pan
+- Auto-recenter to current position
+
+### ⚡ Gemini 3 Integration
+- Google Gemini 3 Flash/Pro model support
+- Real-time streaming responses
+- Image attachments and multimodal conversations
+
+### 📊 Track Comparison Mode
+- Select multiple conversation paths simultaneously
+- AI analyzes and compares selected tracks
+- Explore parallel timelines
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
 - Node.js 18+
 - [Google Gemini API Key](https://aistudio.google.com/app/apikey)
 
-### 설치
+### Installation
 
 ```bash
-# 저장소 클론
+# Clone repository
 git clone https://github.com/your-username/Conversation-Tree.git
 cd Conversation-Tree
 
-# 의존성 설치
+# Install dependencies
 npm install
 
-# 개발 서버 실행
+# Run development server
 npm run dev
 ```
 
-### 빌드
+### Build
 
 ```bash
-# 프로덕션 빌드
+# Production build
 npm run build
 
-# 미리보기
+# Preview
 npm run preview
 ```
 
-### API 키 설정
+### API Key Setup
 
-1. 앱 실행 시 Landing Page에서 Gemini API Key 입력
-2. 키는 브라우저 로컬 스토리지에 안전하게 저장
-3. 다음 접속 시 자동 로드
+1. Enter your Gemini API Key on the Landing Page when launching the app
+2. Key is securely stored in browser local storage
+3. Auto-loads on subsequent visits
 
 ---
 
-## 🛠️ 기술 스택
+## 🛠️ Tech Stack
 
-| 분류 | 기술 |
-|------|------|
+| Category | Technology |
+|----------|------------|
 | **Frontend** | React 19, TypeScript |
 | **Visualization** | D3.js 7 |
 | **Styling** | Tailwind CSS |
@@ -111,53 +113,86 @@ npm run preview
 
 ---
 
-## 📁 프로젝트 구조
+## 📁 Project Structure
 
 ```
 conversation-tree/
 ├── 📂 components/
-│   ├── ChatInterface.tsx    # 채팅 UI 및 메시지 렌더링
-│   ├── UniverseMap.tsx      # D3.js 기반 대화 시각화
-│   └── LandingPage.tsx      # API 키 입력 및 온보딩
+│   ├── ChatInterface.tsx    # Chat UI and message rendering
+│   ├── UniverseMap.tsx      # D3.js-based conversation visualization
+│   └── LandingPage.tsx      # API key input and onboarding
 ├── 📂 services/
-│   ├── geminiService.ts     # Gemini API 통합
-│   └── storageService.ts    # 로컬/브라우저 저장소 관리
+│   ├── geminiService.ts     # Gemini API integration
+│   └── storageService.ts    # Local/browser storage management
 ├── 📂 utils/
-│   └── graphUtils.ts        # 그래프 순회 및 트리 구축
-├── 📂 conversation-tree-data/     # 세션 데이터 (자동 생성)
-├── App.tsx                  # 메인 앱 컴포넌트
-├── types.ts                 # TypeScript 타입 정의
-└── vite.config.ts           # Vite 설정 및 API 플러그인
+│   └── graphUtils.ts        # Graph traversal and tree building
+├── 📂 conversation-tree-data/     # Session data (auto-generated)
+├── App.tsx                  # Main app component
+├── types.ts                 # TypeScript type definitions
+└── vite.config.ts           # Vite config and API plugin
 ```
 
 ---
 
-## 💡 사용 방법
+## 💡 How to Use
 
-1. **새 대화 시작**: 좌측 사이드바에서 "New Chat" 클릭
-2. **분기 생성**: 우주 지도에서 노드 클릭 → "Focus / View" 선택 후 새 메시지 입력
-3. **메모리 연결**: 노드 클릭 → "Connect Memory" → 연결할 노드 선택
-4. **트랙 비교**: 하단 GitMerge 아이콘 클릭 → 비교할 리프 노드 선택 → 질문 입력
-5. **레이아웃 조정**: 노드를 드래그하여 원하는 위치로 이동 (자동 저장)
+1. **Start New Chat**: Click "New Chat" in the left sidebar
+2. **Create Branch**: Click a node in the universe map → Select "Focus / View" → Type new message
+3. **Connect Memory**: Click node → "Connect Memory" → Select target node
+4. **Compare Tracks**: Click GitMerge icon at bottom → Select leaf nodes to compare → Enter question
+5. **Adjust Layout**: Drag nodes to desired positions (auto-saved)
 
 ---
 
-## 🎨 스크린샷
+## 🤝 Contributing
+
+Contributions are always welcome! Bug reports, feature suggestions, and PRs are appreciated.
+
+1. Fork this repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Create a Pull Request
+
+## 🎨 Screenshots
 
 <div align="center">
-<i>우주 지도에서 대화의 흐름을 탐험하세요</i>
+<i>Here are some simple example screenshots.</i>
+
+![Screenshot](image/LandingPage.png)
+
+<table>
+  <tr>
+    <td><img src="image/Chat_1.png" width="400"/></td>
+    <td><img src="image/Chat_2.png" width="400"/></td>
+  </tr>
+  <tr>
+    <td><img src="image/Chat_3.png" width="400"/></td>
+    <td><img src="image/Chat_4.png" width="400"/></td>
+  </tr>
+</table>
 </div>
 
 ---
 
-## 📝 라이선스
+## 📝 License
 
-이 프로젝트는 MIT 라이선스로 배포됩니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
+This project is distributed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
 <div align="center">
 
-**⭐ 이 프로젝트가 도움이 되었다면 Star를 눌러주세요! ⭐**
+**⭐ If this project helped you, please give it a Star! ⭐**
+
+</div>
+
+> I think it would be incredibly useful if developers at AI startups like Google, OpenAI, Claude, XAI, Grok, and others added this feature.
+
+<div align="center">
+
+| 👤 **Developer** | ✉️ **Email** |
+|:---:|:---:|
+| Zanviq | Zanviq.dev@gmail.com |
 
 </div>

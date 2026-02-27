@@ -9,7 +9,7 @@
 [![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
 
-[English](./README.en.md) | **日本語** | [한국어](./README.md)
+[English](./README.md) | **日本語** | [한국어](./README.ko.md) | [中文](./README.zh.md) | [Español](./README.es.md)
 
 <img src="https://img.shields.io/badge/Powered%20by-Google%20Gemini-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Powered by Gemini"/>
 
@@ -19,11 +19,16 @@
 
 ## 💭 開発者の想い
 
-> *「会話は単なる線形の記録ではなく、無限に分岐する可能性の宇宙です。」*
+> *「単なる線形の記録ではなく、無限に分岐する可能性の会話です。」*
 
-このプロジェクトは「もし違う質問をしていたら？」という考えから始まりました。従来のAIチャットボットは会話を一直線に記録しますが、私たちの思考はもっと複雑です。一つの質問から複数の方向を探求したい時、以前のコンテキストを維持しながら新しい可能性を開きたい時 — Conversation-Treeがその答えです。
+私たちの日常において、大規模言語モデルは多くの知識を提供してくれます。特に普段から好奇心旺盛な私は、Google検索の代わりにGoogle AIに多くの質問をします。ほぼすべてのAIサイトでは「*チャットルーム*」形式が採用されています。もちろん、これは私たちが一つのテーマについて集中的にAIに質問できる良い機会を提供してくれます。しかし、私はこの部分に少し物足りなさを感じ、その物足りなさが不便さとして迫ってきました。
 
-D3.jsで会話を可視化しながら、まるで宇宙の星座を描くような体験を作りたいと思いました。各ノードは対話の一瞬であり、接続線は思考の流れです。ユーザーが自分だけの思考マップを作っていく過程そのものが、創造的な旅になることを願っています。
+特にAIは、一度に多くの情報を私に提供しようとします。例えば、1. 2. 3. のように番号を付けて説明されると、私は1番について質問を続けた後、再び2番に戻らなければならない場合に困ってしまいます。
+
+以前、私はAIの不足している長期記憶を補うために「階層的意味記憶システム」というアイデアを思いつき、制作してみた経験がありました。そのアイデアを拡張し、このプロジェクトでは**記憶をトラック別に分離し、希望する記憶の中で会話ができるように**チャットルームを制作したいと考えました。
+
+そうして、私は以下のようなプロジェクトを企画しました。
+多くの人にこの機能を使ってもらいたいと願っていますが、このプロジェクトは別途ホスティングして提供することはありません。
 
 ---
 
@@ -149,6 +154,25 @@ conversation-tree/
 4. ブランチにPush (`git push origin feature/amazing-feature`)
 5. Pull Requestを作成
 
+## 🎨 スクリーンショット
+
+<div align="center">
+<i>簡単な例のスクリーンショットです。</i>
+
+![Screenshot](image/LandingPage.png)
+
+<table>
+  <tr>
+    <td><img src="image/Chat_1.png" width="400"/></td>
+    <td><img src="image/Chat_2.png" width="400"/></td>
+  </tr>
+  <tr>
+    <td><img src="image/Chat_3.png" width="400"/></td>
+    <td><img src="image/Chat_4.png" width="400"/></td>
+  </tr>
+</table>
+</div>
+
 ---
 
 ## 📝 ライセンス
@@ -161,6 +185,14 @@ conversation-tree/
 
 **⭐ このプロジェクトが役に立ったら、Starをお願いします！ ⭐**
 
-Made with 💜 and ☕
+</div>
+
+> Google、OpenAI、Claude、XAI、Grok...など、多くのAIスタートアップの開発者の方々がこの機能を追加してくだされば、非常に便利に使えると思います。
+
+<div align="center">
+
+| 👤 **開発者** | ✉️ **メール** |
+|:---:|:---:|
+| Zanviq | Zanviq.dev@gmail.com |
 
 </div>

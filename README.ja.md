@@ -72,7 +72,7 @@
 
 ```bash
 # リポジトリをクローン
-git clone https://github.com/your-username/Conversation-Tree.git
+git clone https://github.com/Zanviq/Conversation-Tree.git
 cd Conversation-Tree
 
 # 依存関係をインストール

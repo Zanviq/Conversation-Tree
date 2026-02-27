@@ -72,7 +72,7 @@ Espero que muchas personas encuentren útil esta función. Ten en cuenta que est
 
 ```bash
 # Clonar repositorio
-git clone https://github.com/your-username/Conversation-Tree.git
+git clone https://github.com/Zanviq/Conversation-Tree.git
 cd Conversation-Tree
 
 # Instalar dependencias

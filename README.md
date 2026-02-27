@@ -72,7 +72,7 @@ I hope many people find this feature useful. Please note that this project is no
 
 ```bash
 # Clone repository
-git clone https://github.com/your-username/Conversation-Tree.git
+git clone https://github.com/Zanviq/Conversation-Tree.git
 cd Conversation-Tree
 
 # Install dependencies

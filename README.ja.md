@@ -193,6 +193,6 @@ conversation-tree/
 
 | 👤 **開発者** | ✉️ **メール** |
 |:---:|:---:|
-| Zanviq | Zanviq.dev@gmail.com |
+| Zanviq | zanviq.dev@gmail.com |
 
 </div>

@@ -184,6 +184,6 @@ conversation-tree/
 
 | 👤 **개발자** | ✉️ **이메일** |
 |:---:|:---:|
-| Zanviq | Zanviq.dev@gmail.com |
+| Zanviq | zanviq.dev@gmail.com |
 
 </div>

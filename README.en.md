@@ -193,6 +193,6 @@ This project is distributed under the MIT License. See [LICENSE](LICENSE) for de
 
 | 👤 **Developer** | ✉️ **Email** |
 |:---:|:---:|
-| Zanviq | Zanviq.dev@gmail.com |
+| Zanviq | zanviq.dev@gmail.com |
 
 </div>

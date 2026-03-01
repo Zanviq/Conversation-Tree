@@ -195,6 +195,6 @@ Este proyecto se distribuye bajo la Licencia MIT. Consulta el archivo [LICENSE](
 
 | 👤 **Desarrollador** | ✉️ **Correo electrónico** |
 |:---:|:---:|
-| Zanviq | Zanviq.dev@gmail.com |
+| Zanviq | zanviq.dev@gmail.com |
 
 </div>

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Message, Attachment } from '../types';
-import { Send, GitFork, User, Sparkles, Pencil, Copy, X, Check, Paperclip, Menu, GitMerge, Info, Maximize2, Cpu } from 'lucide-react';
+import { Send, GitFork, User, Sparkles, Pencil, Copy, X, Check, Paperclip, Menu, GitMerge, Info, Maximize2, Cpu, KeyRound } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { getThreadFromHead } from '../utils/graphUtils';
 
@@ -22,6 +22,10 @@ interface ChatInterfaceProps {
 
   // View Track
   onViewTrack: (track: { id: string, label: string, color: string }) => void;
+
+  // AI availability: false when no Gemini API key is set
+  aiEnabled: boolean;
+  onOpenApiKeySettings: () => void;
 
   // Model Selection
   chatModel: string;
@@ -74,6 +78,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   onToggleTrackSelection,
   selectedTrackCount,
   onViewTrack,
+  aiEnabled,
+  onOpenApiKeySettings,
   chatModel,
   labelModel,
   setChatModel,
@@ -146,7 +152,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const target = e.currentTarget;
     const { scrollHeight, scrollTop, clientHeight } = target;
-    const isNearBottom = scrollHeight - scrollTop - clientHeight < 110;
+    const isNearBottom = scrollHeight - scrollTop - clientHeight < 90;
     
     // Only update state if the scroll position significantly changed
     if (isNearBottom && hasUserScrolledRef.current) {
@@ -190,7 +196,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
 
   const handleSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if ((!input.trim() && attachments.length === 0) || isProcessing) return;
+    if ((!input.trim() && attachments.length === 0) || isProcessing || !aiEnabled) return;
     
     onSendMessage(input, attachments.length > 0 ? attachments : undefined);
     setInput("");
@@ -488,21 +494,25 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                                 <span>Focus</span>
                             </button>
                             <button
-                                onClick={() => startEdit(nodeId, pair.userMsg.content, 'replace')}
-                                className="flex items-center gap-1 px-2 py-1 bg-space-950 border border-space-700 rounded text-xs text-gray-400 hover:text-yellow-400 hover:border-yellow-500 transition-colors"
+                                onClick={() => aiEnabled && startEdit(nodeId, pair.userMsg.content, 'replace')}
+                                disabled={!aiEnabled}
+                                title={aiEnabled ? "Edit" : "Requires a Gemini API key"}
+                                className={`flex items-center gap-1 px-2 py-1 bg-space-950 border border-space-700 rounded text-xs transition-colors ${
+                                    aiEnabled ? 'text-gray-400 hover:text-yellow-400 hover:border-yellow-500' : 'opacity-40 cursor-not-allowed text-gray-600'
+                                }`}
                             >
                                 <Pencil size={12} />
                                 <span>Edit</span>
                             </button>
                              <button
-                                onClick={() => !isRoot && startEdit(nodeId, pair.userMsg.content, 'fork')}
-                                disabled={isRoot}
+                                onClick={() => !isRoot && aiEnabled && startEdit(nodeId, pair.userMsg.content, 'fork')}
+                                disabled={isRoot || !aiEnabled}
                                 className={`flex items-center gap-1 px-2 py-1 bg-space-950 border border-space-700 rounded text-xs transition-colors ${
-                                    isRoot 
-                                    ? 'opacity-40 cursor-not-allowed text-gray-600' 
+                                    isRoot || !aiEnabled
+                                    ? 'opacity-40 cursor-not-allowed text-gray-600'
                                     : 'text-gray-400 hover:text-green-400 hover:border-green-500'
                                 }`}
-                                title={isRoot ? "Cannot fork the root message" : "Edit & Fork"}
+                                title={isRoot ? "Cannot fork the root message" : !aiEnabled ? "Requires a Gemini API key" : "Edit & Fork"}
                             >
                                 <Copy size={12} />
                                 <span>Edit & Fork</span>
@@ -556,6 +566,21 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 </div>
             )}
             
+            {/* Missing API Key Notice: only AI features are disabled, browsing still works */}
+            {!aiEnabled && (
+                <div className="flex flex-wrap items-center gap-3 mb-3 px-4 py-3 rounded-xl border border-amber-500/30 bg-amber-950/30 text-sm text-amber-200">
+                    <KeyRound size={16} className="shrink-0 text-amber-400" />
+                    <span className="flex-1 min-w-[200px]">AI responses are disabled. Add your Gemini API key to send messages, edit and fork.</span>
+                    <button
+                        type="button"
+                        onClick={onOpenApiKeySettings}
+                        className="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-100 text-xs font-medium"
+                    >
+                        Add API key
+                    </button>
+                </div>
+            )}
+
             {/* Track Selection Chips */}
             {isTrackSelectionMode && (
                 <div className="flex flex-wrap gap-2 mb-2 animate-in slide-in-from-bottom-2 fade-in">
@@ -608,12 +633,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                         onKeyDown={handleKeyDown}
                         onPaste={handlePaste}
                         rows={1}
-                        placeholder={isTrackSelectionMode ? "Ask AI to compare these timelines..." : ""}
-                        className="w-full bg-space-950 border border-space-700 text-gray-200 rounded-xl px-4 py-4 pr-12 focus:outline-none focus:ring-2 focus:ring-nebula-500/50 focus:border-nebula-500 transition-all placeholder-gray-600 resize-none min-h-[56px] max-h-[200px]"
+                        disabled={!aiEnabled}
+                        placeholder={!aiEnabled ? "Gemini API key required" : isTrackSelectionMode ? "Ask AI to compare these timelines..." : ""}
+                        className="w-full bg-space-950 border border-space-700 text-gray-200 rounded-xl px-4 py-4 pr-12 focus:outline-none focus:ring-2 focus:ring-nebula-500/50 focus:border-nebula-500 transition-all placeholder-gray-600 resize-none min-h-[56px] max-h-[200px] disabled:opacity-60 disabled:cursor-not-allowed"
                     />
                     <button 
                         type="submit"
-                        disabled={(!input.trim() && attachments.length === 0) || isProcessing}
+                        disabled={(!input.trim() && attachments.length === 0) || isProcessing || !aiEnabled}
                         className="absolute right-4 bottom-4 aspect-square w-10 h-10 flex items-center justify-center bg-nebula-600 hover:bg-nebula-500 disabled:bg-space-800 disabled:text-gray-600 text-white rounded-lg transition-colors"
                     >
                         <Send size={18} />

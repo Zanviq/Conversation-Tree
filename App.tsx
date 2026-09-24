@@ -1,20 +1,40 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Plus, MessageSquare, Menu, X, GitGraph, Home } from 'lucide-react';
+import { Plus, MessageSquare, Menu, X, GitGraph, Home, KeyRound, LogOut } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import ChatInterface from './components/ChatInterface';
 import UniverseMap from './components/UniverseMap';
 import { LandingPage } from './components/LandingPage';
+import { ApiKeyModal } from './components/ApiKeyModal';
 import { Message, Session, Attachment } from './types';
 import { streamGeminiResponse, generateNodeLabel } from './services/geminiService';
 import { getThreadFromHead, buildHierarchy, findLCA } from './utils/graphUtils';
 import { getStorageAdapter } from './services/storageService';
+import { User, fetchCurrentUser, logout } from './services/apiClient';
+import { useGeminiApiKey } from './services/apiKeyStore';
 
 const App: React.FC = () => {
   // --- Landing State ---
   const [hasStarted, setHasStarted] = useState(false);
   
-  // --- Storage State (Always use local storage)
-  const storageAdapter = useRef(getStorageAdapter('local'));
-  
+  // --- Auth State ---
+  const [user, setUser] = useState<User | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
+
+  useEffect(() => {
+    fetchCurrentUser()
+      .then(setUser)
+      .catch(e => console.error('Failed to check session', e))
+      .finally(() => setAuthChecked(true));
+  }, []);
+
+  // --- Gemini API Key (browser localStorage only) ---
+  const apiKey = useGeminiApiKey();
+  const aiEnabled = apiKey.length > 0;
+  const [showApiKeyModal, setShowApiKeyModal] = useState(false);
+
+  // --- Storage State (per-user storage on the server)
+  const storageAdapter = useRef(getStorageAdapter('server'));
+
   // --- Toast State ---
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'success' } | null>(null);
   
@@ -40,10 +60,10 @@ const App: React.FC = () => {
         showToast('모델 로드 실패', 'error');
       }
     };
-    if (hasStarted) {
+    if (hasStarted && user) {
       loadModels();
     }
-  }, [hasStarted]);
+  }, [hasStarted, user]);
 
   useEffect(() => {
       const saveModels = async () => {
@@ -57,10 +77,10 @@ const App: React.FC = () => {
           showToast('모델 저장 실패', 'error');
         }
       };
-      if (hasStarted) {
+      if (hasStarted && user) {
         saveModels();
       }
-  }, [chatModel, labelModel, hasStarted]);
+  }, [chatModel, labelModel, hasStarted, user]);
 
   // --- State ---
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -73,9 +93,14 @@ const App: React.FC = () => {
         console.log('🔄 Loading sessions from server...');
         const loadedSessions = await storageAdapter.current.loadSessions();
         setSessions(loadedSessions);
-        
-        const loadedActiveId = await storageAdapter.current.loadActiveId();
-        setActiveSessionId(loadedActiveId);
+
+        if (loadedSessions.length === 0) {
+          createNewSession();
+        } else {
+          const loadedActiveId = await storageAdapter.current.loadActiveId();
+          const exists = loadedSessions.some(s => s.id === loadedActiveId);
+          setActiveSessionId(exists ? loadedActiveId : loadedSessions[0].id);
+        }
         
         console.log('✅ Sessions loaded');
       } catch (e) {
@@ -84,10 +109,10 @@ const App: React.FC = () => {
       }
     };
     
-    if (hasStarted) {
+    if (hasStarted && user) {
       loadData();
     }
-  }, [hasStarted]);
+  }, [hasStarted, user]);
 
   const [isProcessing, setIsProcessing] = useState(false);
   
@@ -196,13 +221,7 @@ const App: React.FC = () => {
     saveActiveId();
   }, [activeSessionId]);
 
-  useEffect(() => {
-    if (sessions.length === 0) {
-      createNewSession();
-    }
-  }, []);
-
-  // --- Derived State ---
+// --- Derived State ---
   const activeSession = useMemo(() => 
     sessions.find(s => s.id === activeSessionId) || null, 
   [sessions, activeSessionId]);
@@ -813,8 +832,45 @@ const App: React.FC = () => {
     setIsTrackSelectionMode(prev => !prev);
   };
 
-  if (!hasStarted) {
-      return <LandingPage onStart={() => setHasStarted(true)} onError={showToast} />;
+  const handleLogout = async () => {
+    try {
+      // Sends pending changes, then drops the cached data of this user
+      await storageAdapter.current.clear();
+      await logout();
+    } catch (e) {
+      console.error('Logout failed', e);
+    }
+    setSessions([]);
+    setActiveSessionId(null);
+    setUser(null);
+    setHasStarted(false);
+  };
+
+  if (!authChecked) {
+      return <div className="h-[100dvh] w-full bg-space-950" />;
+  }
+
+  if (!hasStarted || !user) {
+      return (
+        <>
+          <LandingPage
+            user={user}
+            onAuthenticated={(u) => { setUser(u); setHasStarted(true); }}
+            onStart={() => setHasStarted(true)}
+            onLogout={handleLogout}
+            onError={showToast}
+          />
+          {toast && (
+            <div className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-[200] px-4 py-3 rounded-lg font-semibold text-sm max-w-md ${
+              toast.type === 'error'
+                ? 'bg-red-900/90 text-red-200 border border-red-700'
+                : 'bg-emerald-900/90 text-emerald-200 border border-emerald-700'
+            }`}>
+              {toast.message}
+            </div>
+          )}
+        </>
+      );
   }
 
   return (
@@ -887,14 +943,38 @@ const App: React.FC = () => {
           ))}
         </div>
 
-        {/* --- Return to Home Button (New) --- */}
-        <div className="p-4 border-t border-space-800 shrink-0">
+        {/* --- Account / Settings / Return Home --- */}
+        <div className="p-4 border-t border-space-800 shrink-0 space-y-1">
+            <div className="flex items-center gap-3 px-3 py-2 min-w-0">
+                <div className="w-7 h-7 rounded-full bg-nebula-600/30 border border-nebula-500/40 flex items-center justify-center text-xs font-bold text-nebula-400 shrink-0">
+                    {user.displayName.charAt(0).toUpperCase()}
+                </div>
+                <div className="min-w-0">
+                    <div className="text-sm text-gray-200 truncate">{user.displayName}</div>
+                    <div className="text-[11px] text-gray-500 truncate">@{user.username}</div>
+                </div>
+            </div>
+            <button
+                onClick={() => setShowApiKeyModal(true)}
+                className="w-full flex items-center gap-2 text-gray-400 hover:text-white hover:bg-space-800 px-3 py-2 rounded-lg transition-colors text-sm"
+            >
+                <KeyRound size={16} />
+                <span className="flex-1 text-left">Gemini API Key</span>
+                <span className={`w-2 h-2 rounded-full ${aiEnabled ? 'bg-emerald-400' : 'bg-amber-400'}`} title={aiEnabled ? 'Key set' : 'No key'} />
+            </button>
             <button
                 onClick={() => setHasStarted(false)}
                 className="w-full flex items-center gap-2 text-gray-400 hover:text-white hover:bg-space-800 px-3 py-2 rounded-lg transition-colors text-sm"
             >
                 <Home size={16} />
                 <span>Return Home</span>
+            </button>
+            <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-2 text-gray-400 hover:text-red-300 hover:bg-space-800 px-3 py-2 rounded-lg transition-colors text-sm"
+            >
+                <LogOut size={16} />
+                <span>Log out</span>
             </button>
         </div>
       </div>
@@ -935,6 +1015,10 @@ const App: React.FC = () => {
           selectedTrackCount={selectedTrackIds.length}
           onViewTrack={setViewingTrack}
           
+          // AI availability (requires a user-provided Gemini API key)
+          aiEnabled={aiEnabled}
+          onOpenApiKeySettings={() => setShowApiKeyModal(true)}
+
           // Model Props
           chatModel={chatModel}
           labelModel={labelModel}
@@ -1056,6 +1140,13 @@ const App: React.FC = () => {
             </button>
           </div>
       </div>
+
+      {showApiKeyModal && (
+        <ApiKeyModal
+          onClose={() => setShowApiKeyModal(false)}
+          onSaved={() => showToast('Gemini API key saved in this browser.', 'success')}
+        />
+      )}
 
       {/* Track View Modal */}
       {viewingTrack && (

@@ -1,71 +1,59 @@
-import React, { useState, useEffect } from 'react';
-import { Sparkles, ArrowRight, Key, GitGraph, Zap, MessageSquare, Monitor, Loader } from 'lucide-react';
-import { validateApiKey } from '../services/geminiService';
+import React, { useState } from 'react';
+import { Sparkles, ArrowRight, User as UserIcon, Lock, GitGraph, Zap, MessageSquare, Monitor, Loader, LogOut, BadgeCheck } from 'lucide-react';
+import { User, login, register } from '../services/apiClient';
 
 interface LandingPageProps {
+  user: User | null;
+  onAuthenticated: (user: User) => void;
   onStart: () => void;
+  onLogout: () => void;
   onError: (message: string) => void;
 }
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onError }) => {
-  const [apiKey, setApiKey] = useState('');
-  const [isValidating, setIsValidating] = useState(false);
+type AuthMode = 'login' | 'register';
+
+export const LandingPage: React.FC<LandingPageProps> = ({ user, onAuthenticated, onStart, onLogout, onError }) => {
+  const [mode, setMode] = useState<AuthMode>('login');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [displayName, setDisplayName] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
 
-  useEffect(() => {
-      const savedKey = localStorage.getItem('GEMINI_API_KEY');
-      if (savedKey) {
-          setApiKey(savedKey);
-      }
-  }, []);
-
-  const handleConnect = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setLocalError(null);
-    
-    if (!apiKey.trim()) {
-        const msg = "Please enter a valid Gemini API Key.";
+
+    if (!username.trim() || !password) {
+        const msg = "Please enter your username and password.";
         setLocalError(msg);
         onError(msg);
         return;
     }
 
-    setIsValidating(true);
-    
+    setIsSubmitting(true);
     try {
-        // Validate API key
-        const validation = await validateApiKey(apiKey.trim());
-        
-        if (!validation.valid) {
-            const errorMsg = validation.error || "Invalid API Key";
-            setLocalError(errorMsg);
-            onError(errorMsg);
-            setIsValidating(false);
-            return;
-        }
-        
-        // Save to LocalStorage for persistence
-        localStorage.setItem('GEMINI_API_KEY', apiKey.trim());
-        
-        // Attempt to polyfill/set process.env for the service
-        // This handles the transition from the strict environment variable requirement to user input
-        if (typeof process === 'undefined') {
-            (window as any).process = { env: {} };
-        }
-        if (!process.env) {
-            (process as any).env = {};
-        }
-        process.env.API_KEY = apiKey.trim();
-
-        onStart();
-    } catch (e) {
-        console.error("Error saving API Key", e);
-        const msg = "Failed to validate API Key. Please try again.";
+        const authed = mode === 'login'
+            ? await login(username.trim(), password)
+            : await register(username.trim(), password, displayName.trim());
+        setPassword('');
+        onAuthenticated(authed);
+    } catch (err: any) {
+        const msg = err?.message || "Something went wrong. Please try again.";
         setLocalError(msg);
         onError(msg);
     } finally {
-        setIsValidating(false);
+        setIsSubmitting(false);
     }
   };
+
+  const inputClass = `w-full bg-space-950 border rounded-xl py-3 pl-10 pr-4 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:ring-1 transition-all ${
+      localError
+          ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+          : 'border-space-700 focus:border-nebula-500 focus:ring-nebula-500'
+  }`;
+
+  const submitButtonClass = "w-full group relative overflow-hidden bg-gradient-to-r from-space-800 to-space-900 hover:from-nebula-900/50 hover:to-cyan-900/50 border border-space-700 hover:border-nebula-500/50 text-white h-12 rounded-xl flex items-center justify-center gap-3 transition-all duration-300 shadow-lg hover:shadow-nebula-500/10 disabled:opacity-50 disabled:cursor-not-allowed";
 
   return (
     <div className="h-[100dvh] w-full bg-space-950 text-gray-200 font-sans selection:bg-nebula-500/30 overflow-y-auto overflow-x-hidden relative flex flex-col">
@@ -102,58 +90,114 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onStart, onError }) =>
                     </p>
                   </div>
 
-                  {/* Auth Card (Manual Input) */}
+                  {/* Auth Card */}
                   <div className="w-full max-w-md bg-space-900/50 backdrop-blur-xl border border-space-800 rounded-2xl p-6 shadow-2xl mt-4 space-y-6">
-                       <div className="space-y-2 text-left">
-                            <label className="text-xs font-mono uppercase text-gray-500 ml-1">Gemini API Key</label>
+                    {user ? (
+                      <>
+                        <div className="flex items-center gap-3 text-left">
+                            <div className="w-10 h-10 rounded-full bg-nebula-600/30 border border-nebula-500/40 flex items-center justify-center font-bold text-nebula-400">
+                                {user.displayName.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                                <div className="text-xs font-mono uppercase text-gray-500 flex items-center gap-1"><BadgeCheck size={12}/> Signed in</div>
+                                <div className="text-gray-100 font-medium">{user.displayName} <span className="text-gray-500 text-sm">@{user.username}</span></div>
+                            </div>
+                        </div>
+                        <button onClick={onStart} className={submitButtonClass}>
+                            <span className="font-semibold text-sm">Continue</span>
+                            <ArrowRight size={16} className="text-gray-500 group-hover:text-white group-hover:translate-x-1 transition-all"/>
+                        </button>
+                        <button onClick={onLogout} className="w-full flex items-center justify-center gap-2 text-xs text-gray-500 hover:text-red-300">
+                            <LogOut size={12}/> Log out
+                        </button>
+                      </>
+                    ) : (
+                      <form onSubmit={handleSubmit} className="space-y-4">
+                        {/* Mode Tabs */}
+                        <div className="grid grid-cols-2 gap-1 p-1 bg-space-950 border border-space-800 rounded-xl">
+                            {(['login', 'register'] as AuthMode[]).map(m => (
+                                <button
+                                    key={m}
+                                    type="button"
+                                    onClick={() => { setMode(m); setLocalError(null); }}
+                                    className={`py-2 rounded-lg text-sm transition-colors ${mode === m ? 'bg-space-800 text-white' : 'text-gray-500 hover:text-gray-300'}`}
+                                >
+                                    {m === 'login' ? 'Sign in' : 'Create account'}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="space-y-3 text-left">
                             <div className="relative group">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Key size={16} className="text-gray-500 group-focus-within:text-nebula-400 transition-colors"/>
+                                    <UserIcon size={16} className="text-gray-500 group-focus-within:text-nebula-400 transition-colors"/>
                                 </div>
-                                <input 
-                                    type="password" 
-                                    value={apiKey}
-                                    onChange={(e) => {
-                                        setApiKey(e.target.value);
-                                        setLocalError(null);
-                                    }}
-                                    placeholder="Enter your API Key..."
-                                    className={`w-full bg-space-950 border rounded-xl py-3 pl-10 pr-4 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:ring-1 transition-all ${
-                                        localError 
-                                            ? 'border-red-500 focus:border-red-500 focus:ring-red-500' 
-                                            : 'border-space-700 focus:border-nebula-500 focus:ring-nebula-500'
-                                    }`}
+                                <input
+                                    type="text"
+                                    name="username"
+                                    autoComplete="username"
+                                    value={username}
+                                    onChange={(e) => { setUsername(e.target.value); setLocalError(null); }}
+                                    placeholder="Username"
+                                    className={inputClass}
+                                />
+                            </div>
+                            {mode === 'register' && (
+                                <div className="relative group">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <Sparkles size={16} className="text-gray-500 group-focus-within:text-nebula-400 transition-colors"/>
+                                    </div>
+                                    <input
+                                        type="text"
+                                        name="displayName"
+                                        value={displayName}
+                                        onChange={(e) => setDisplayName(e.target.value)}
+                                        placeholder="Display name (optional)"
+                                        className={inputClass}
+                                    />
+                                </div>
+                            )}
+                            <div className="relative group">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <Lock size={16} className="text-gray-500 group-focus-within:text-nebula-400 transition-colors"/>
+                                </div>
+                                <input
+                                    type="password"
+                                    name="password"
+                                    autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                                    value={password}
+                                    onChange={(e) => { setPassword(e.target.value); setLocalError(null); }}
+                                    placeholder={mode === 'login' ? 'Password' : 'Password (min. 8 characters)'}
+                                    className={inputClass}
                                 />
                             </div>
                             {localError && (
-                                <div className="flex items-center gap-2 mt-2 p-3 bg-red-950/40 border border-red-700/50 rounded-lg animate-in fade-in slide-in-from-top-1 duration-200">
+                                <div className="flex items-center gap-2 p-3 bg-red-950/40 border border-red-700/50 rounded-lg animate-in fade-in slide-in-from-top-1 duration-200">
                                     <div className="w-1.5 h-1.5 bg-red-500 rounded-full flex-shrink-0"></div>
                                     <span className="text-xs text-red-300 font-medium">{localError}</span>
                                 </div>
                             )}
-                       </div>
+                        </div>
 
-                       <button
-                          onClick={handleConnect}
-                          disabled={isValidating}
-                          className="w-full group relative overflow-hidden bg-gradient-to-r from-space-800 to-space-900 hover:from-nebula-900/50 hover:to-cyan-900/50 border border-space-700 hover:border-nebula-500/50 text-white h-12 rounded-xl flex items-center justify-center gap-3 transition-all duration-300 shadow-lg hover:shadow-nebula-500/10 disabled:opacity-50 disabled:cursor-not-allowed"
-                       >
-                           {isValidating ? (
-                               <>
-                                   <Loader size={16} className="animate-spin" />
-                                   <span className="font-semibold text-sm">Validating...</span>
-                               </>
-                           ) : (
-                               <>
-                                   <span className="font-semibold text-sm">Initialize System</span>
-                                   <ArrowRight size={16} className="text-gray-500 group-hover:text-white group-hover:translate-x-1 transition-all"/>
-                               </>
-                           )}
-                      </button>
+                        <button type="submit" disabled={isSubmitting} className={submitButtonClass}>
+                            {isSubmitting ? (
+                                <>
+                                    <Loader size={16} className="animate-spin" />
+                                    <span className="font-semibold text-sm">Please wait...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <span className="font-semibold text-sm">{mode === 'login' ? 'Sign in' : 'Create account'}</span>
+                                    <ArrowRight size={16} className="text-gray-500 group-hover:text-white group-hover:translate-x-1 transition-all"/>
+                                </>
+                            )}
+                        </button>
 
-                      <p className="text-[10px] text-center text-gray-600">
-                          Your key is stored locally in your browser.
-                      </p>
+                        <p className="text-[10px] text-center text-gray-600">
+                            Demo account: <span className="font-mono text-gray-400">demo</span> / <span className="font-mono text-gray-400">demo1234</span>
+                        </p>
+                      </form>
+                    )}
                   </div>
               </div>
 

@@ -1,16 +1,13 @@
 import { GoogleGenAI } from "@google/genai";
 import { Message } from "../types";
+import { getGeminiApiKey } from "./apiKeyStore";
 
-// Helper to reliably get the API key from Env or LocalStorage
-const getApiKey = (): string => {
-  const envKey = process.env.API_KEY;
-  if (envKey) return envKey;
-  
-  // Fallback to localStorage if available (for manual input mode)
-  if (typeof localStorage !== 'undefined') {
-      return localStorage.getItem('GEMINI_API_KEY') || "";
-  }
-  return "";
+export const MISSING_KEY_MESSAGE = "Add your Gemini API key in Settings to enable AI responses.";
+
+// Used when no API key is set: the first few words of the input become the node label
+export const fallbackNodeLabel = (text: string): string => {
+  const words = text.trim().split(/\s+/).slice(0, 5).join(' ');
+  return words.length > 24 ? words.substring(0, 24) + '...' : words;
 };
 
 export const streamGeminiResponse = async (
@@ -20,9 +17,16 @@ export const streamGeminiResponse = async (
   systemInstruction: string = "You are a helpful AI assistant. Answer concisely and clearly.",
   onError?: (errorMessage: string) => void
 ): Promise<void> => {
+  const apiKey = getGeminiApiKey();
+  if (!apiKey) {
+    if (onError) onError(MISSING_KEY_MESSAGE);
+    onChunk(`[${MISSING_KEY_MESSAGE}]`);
+    return;
+  }
+
   try {
     // Instantiate here to pick up the latest key
-    const ai = new GoogleGenAI({ apiKey: getApiKey() });
+    const ai = new GoogleGenAI({ apiKey });
     
     // Convert our Message structure to Gemini API format
     const contents = history.map((msg) => {
@@ -124,8 +128,10 @@ export const validateApiKey = async (apiKey: string): Promise<{ valid: boolean; 
 
 export const generateNodeLabel = async (text: string, modelId: string = "gemini-3-flash-preview"): Promise<string> => {
   if (!text || text.trim().length === 0) return "";
+  const apiKey = getGeminiApiKey();
+  if (!apiKey) return fallbackNodeLabel(text);
   try {
-    const ai = new GoogleGenAI({ apiKey: getApiKey() });
+    const ai = new GoogleGenAI({ apiKey });
     const response = await ai.models.generateContent({
       model: modelId,
       contents: `Summarize the following user input into a very short label (max 3-5 words) to be used as a name for a node in a conversation graph. Identify the language of the input and generate the label in the SAME language. Return only the label text. Input: "${text}"`,

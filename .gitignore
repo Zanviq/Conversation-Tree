@@ -22,3 +22,15 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Local data from the previous file-based storage
+conversation-tree-data/
+tree-ui-chat-data/
+
+# Screenshot script
+scripts/capture-screenshots/node_modules

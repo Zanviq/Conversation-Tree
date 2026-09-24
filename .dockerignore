@@ -1,0 +1,11 @@
+node_modules
+dist
+server
+scripts
+image
+conversation-tree-data
+tree-ui-chat-data
+.git
+.env
+.env.*
+*.local

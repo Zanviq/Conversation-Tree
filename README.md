@@ -1,19 +1,12 @@
-<div align="center">
-
 # 🌳 Conversation-Tree
 
-**Explore conversations like a tree**
+**A chat interface where every message can branch into its own timeline, shown as a tree map.**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://react.dev/) [![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/) [![Express](https://img.shields.io/badge/Express-000000?logo=express&logoColor=white)](https://expressjs.com/) [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/) [![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 
-**English** | [日本語](./README.ja.md) | [한국어](./README.ko.md) | [中文](./README.zh.md) | [Español](./README.es.md)
+**English** | [한국어](README.ko.md)
 
-<img src="https://img.shields.io/badge/Powered%20by-Google%20Gemini-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Powered by Gemini"/>
-
-</div>
+[![Powered by Gemini](https://img.shields.io/badge/Powered%20by-Google%20Gemini-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev)
 
 ---
 
@@ -21,178 +14,173 @@
 
 > *"A conversation is not a simple linear record, but an infinitely branching tree of possibilities."*
 
-In our daily lives, large language models provide us with a wealth of knowledge. As someone who is naturally curious, I often ask Google AI many questions instead of just using Google Search. Almost all AI platforms use a *"chat room"* format. While this provides a great opportunity to ask an AI in-depth questions about a single topic, I felt something was missing, and that missing piece became an inconvenience.
-
-Specifically, AI often tries to provide a lot of information at once. For example, if it explains things using numbered lists like 1, 2, and 3, I might ask follow-up questions about point 1, but then find it difficult to navigate back to point 2 later.
-
-Previously, to compensate for the AI's lack of long-term memory, I came up with and built a "Hierarchical Semantic Memory System." Expanding on that idea, I wanted to create a chat interface for this project where **memories are separated by tracks, allowing you to converse within the specific memory context you want.**
-
-That's how I planned this project.
-I hope many people find this feature useful. Please note that this project is not hosted as a service.
+<!-- TODO: 개발 동기 -->
 
 ---
 
 ## ✨ Features
 
-### 🌳 Multiverse Branching
-- Create new conversation branches from any message
-- All branches maintain independent context
-- "Edit & Fork" feature to modify past questions and explore new paths
+### 🌳 Branching Conversations
+- Every user message and AI answer is stored as a node with `parentId` / `childrenIds`, so one conversation is a tree
+- **Focus** moves the current head to any earlier answer; the next message starts a new branch from there
+- **Edit** replaces a question and regenerates its answer; **Edit & Fork** keeps the original and adds the edited question as a sibling branch
+- The AI only receives the messages on the path from the root to the current head
 
-### 🔗 Memory Connection (Context Injection)
-- Share memory between different conversation paths
-- Inject context from Track A into Track B
-- Cross-reference complex ideas
+### 🔗 Connected Memory
+- **Connect Memory** links a node from another branch into the current one
+- When sending, the linked branch's messages (from the common ancestor down) are prepended to the prompt as a "Connected Memory" block
+- Connections are drawn as dashed lines in the map and can be removed with **Delete Connection**
 
-### 🗺️ Interactive Universe Map
-- Real-time conversation visualization powered by D3.js
-- Freely adjust node positions by dragging
-- Explore entire conversation structure with zoom/pan
-- Auto-recenter to current position
+### 📊 Timeline Comparison
+- The compare button switches to track selection mode; leaf nodes in the map are picked as Track B, C, …
+- The full text of each selected track is added to the question as context
+- Attached tracks appear as badges on the message and open in a read-only view
 
-### ⚡ Gemini 3 Integration
-- Google Gemini 3 Flash/Pro model support
-- Real-time streaming responses
-- Image attachments and multimodal conversations
+### 🗺️ Conversation Map
+- D3.js tree of question/answer pairs next to the chat
+- Zoom, pan, drag nodes and re-center on the current node; dragged positions are saved
+- Node labels are short summaries generated by Gemini (first words of the question when no key is set)
 
-### 📊 Track Comparison Mode
-- Select multiple conversation paths simultaneously
-- AI analyzes and compares selected tracks
-- Explore parallel timelines
+### ⚡ Gemini Responses
+- Streaming answers via `@google/genai`, called directly from the browser
+- Gemini 3 Flash / Pro can be chosen separately for answers and for labels
+- Image attachments (file picker or paste) are sent as inline data
+
+### 👤 Accounts and Storage
+- Sign up / sign in with username and password (bcrypt hash, JWT in an httpOnly cookie)
+- Conversations, active conversation and model choices are stored per user in PostgreSQL
+- The client sends only changed conversations, throttled, instead of saving on every streamed chunk
 
 ---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 18+
-- [Google Gemini API Key](https://aistudio.google.com/app/apikey)
+- [Docker](https://docs.docker.com/get-docker/) with Docker Compose
+- (Optional, for AI answers) a [Google Gemini API key](https://aistudio.google.com/apikey)
 
-### Installation
+### Run
 
 ```bash
-# Clone repository
 git clone https://github.com/Zanviq/Conversation-Tree.git
 cd Conversation-Tree
-
-# Install dependencies
-npm install
-
-# Run development server
-npm run dev
+cp .env.example .env
+docker compose up
 ```
 
-### Build
+Open http://localhost:8080 (change `WEB_PORT` in `.env` if the port is in use).
 
-```bash
-# Production build
-npm run build
+On first start the server applies database migrations and creates a demo account with sample conversations.
 
-# Preview
-npm run preview
-```
+### Demo Account
 
-### API Key Setup
+| Username | Password |
+|----------|----------|
+| `demo` | `demo1234` |
 
-1. Enter your Gemini API Key on the Landing Page when launching the app
-2. Key is securely stored in browser local storage
-3. Auto-loads on subsequent visits
+### Gemini API Key
+Without a key you can sign in and browse all conversations, the map and the track views. Sending, **Edit** and **Edit & Fork** are disabled until a key is added.
+
+1. Click **Add API key** above the message box (or **Gemini API Key** in the sidebar)
+2. Paste your key and click **Validate & Save**
+3. The key is stored only in your browser's localStorage and sent directly to Google; it is never sent to this app's server
 
 ---
 
 ## 🛠️ Tech Stack
 
 | Category | Technology |
-|----------|------------|
-| **Frontend** | React 19, TypeScript |
+|----------|-----------|
+| **Frontend** | React 19, TypeScript, Vite 6 |
 | **Visualization** | D3.js 7 |
 | **Styling** | Tailwind CSS |
-| **AI** | Google Gemini API |
-| **Build** | Vite |
 | **Markdown** | react-markdown |
+| **AI** | Google Gemini API (`@google/genai`, browser-side) |
+| **Backend** | Node.js 22, Express 5 |
+| **Database** | PostgreSQL 16, Drizzle ORM, drizzle-kit |
+| **Auth** | bcryptjs, jsonwebtoken (httpOnly cookie) |
+| **Infra** | Docker Compose, nginx |
+| **Screenshots** | Playwright |
 
 ---
 
 ## 📁 Project Structure
 
 ```
-conversation-tree/
+Conversation-Tree/
 ├── 📂 components/
-│   ├── ChatInterface.tsx    # Chat UI and message rendering
-│   ├── UniverseMap.tsx      # D3.js-based conversation visualization
-│   └── LandingPage.tsx      # API key input and onboarding
+│   ├── ChatInterface.tsx       # Chat thread, message actions, input and API key notice
+│   ├── UniverseMap.tsx         # D3 conversation map (drag, zoom, connections, tracks)
+│   ├── LandingPage.tsx         # Landing page with sign in / sign up
+│   └── ApiKeyModal.tsx         # Gemini API key input (browser storage only)
 ├── 📂 services/
-│   ├── geminiService.ts     # Gemini API integration
-│   └── storageService.ts    # Local/browser storage management
+│   ├── apiClient.ts            # Fetch wrapper and auth API calls
+│   ├── apiKeyStore.ts          # Gemini key in localStorage
+│   ├── geminiService.ts        # Streaming answers, key validation, node labels
+│   └── storageService.ts       # Syncs conversations and settings with the server
 ├── 📂 utils/
-│   └── graphUtils.ts        # Graph traversal and tree building
-├── 📂 conversation-tree-data/     # Session data (auto-generated)
-├── App.tsx                  # Main app component
-├── types.ts                 # TypeScript type definitions
-└── vite.config.ts           # Vite config and API plugin
+│   └── graphUtils.ts           # Thread building, connected memory, tree hierarchy
+├── 📂 server/
+│   ├── 📂 drizzle/             # SQL migrations
+│   ├── 📂 src/
+│   │   ├── 📂 db/              # Schema, migration runner, demo seed
+│   │   ├── 📂 routes/          # /api/auth, /api/conversations, /api/settings
+│   │   ├── auth.ts             # Password hashing and session cookie
+│   │   └── index.ts            # Express entry (migrate → seed → listen)
+│   └── Dockerfile
+├── 📂 docker/
+│   └── nginx.conf              # Serves the web build and proxies /api
+├── 📂 scripts/
+│   └── 📂 capture-screenshots/ # Playwright script for README screenshots
+├── 📂 image/                   # Screenshots
+├── App.tsx                     # App state, branching logic, layout
+├── types.ts                    # Session / Message types
+├── Dockerfile                  # Web image (Vite build → nginx)
+├── docker-compose.yml          # db, server, web
+└── .env.example
 ```
 
 ---
 
 ## 💡 How to Use
 
-1. **Start New Chat**: Click "New Chat" in the left sidebar
-2. **Create Branch**: Click a node in the universe map → Select "Focus / View" → Type new message
-3. **Connect Memory**: Click node → "Connect Memory" → Select target node
-4. **Compare Tracks**: Click GitMerge icon at bottom → Select leaf nodes to compare → Enter question
-5. **Adjust Layout**: Drag nodes to desired positions (auto-saved)
+1. **Sign in**: Use the demo account or create one on the landing page
+2. **Start a chat**: Click **New Chat** and send a message (requires a Gemini API key)
+3. **Branch**: Hover an answer and click **Focus**, or click a node in the map → **Focus / View**, then send a new message
+4. **Edit & Fork**: Change an earlier question and keep both versions as separate branches
+5. **Connect memory**: Click a node → **Connect Memory** → select the target node
+6. **Compare timelines**: Click the compare button next to the input, select leaf nodes in the map, then ask your question
+7. **Arrange the map**: Drag nodes; positions are saved with the conversation
 
 ---
 
-## 🤝 Contributing
-
-Contributions are always welcome! Bug reports, feature suggestions, and PRs are appreciated.
-
-1. Fork this repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Create a Pull Request
-
 ## 🎨 Screenshots
 
-<div align="center">
-<i>Here are some simple example screenshots.</i>
-
-![Screenshot](image/LandingPage.png)
+<p align="center">
+  <img src="image/main-timeline-compare.png" alt="Main screen with timeline comparison" width="100%">
+</p>
 
 <table>
   <tr>
-    <td><img src="image/Chat_1.png" width="400"/></td>
-    <td><img src="image/Chat_2.png" width="400"/></td>
+    <td align="center"><img src="image/landing-login.png" alt="Landing and sign in"><br><sub>Landing / Sign in</sub></td>
+    <td align="center"><img src="image/track-view.png" alt="Track view"><br><sub>Read-only track view</sub></td>
   </tr>
   <tr>
-    <td><img src="image/Chat_3.png" width="400"/></td>
-    <td><img src="image/Chat_4.png" width="400"/></td>
+    <td align="center"><img src="image/connected-memory.png" alt="Connected memory"><br><sub>Connected memory</sub></td>
+    <td align="center"><img src="image/branching-map.png" alt="Branching map"><br><sub>Branching map</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="image/model-select.png" alt="Model selection"><br><sub>Model selection</sub></td>
+    <td align="center"><img src="image/api-key-settings.png" alt="API key settings"><br><sub>Gemini API key settings</sub></td>
   </tr>
 </table>
-</div>
 
 ---
 
 ## 📝 License
 
-This project is distributed under the MIT License. See [LICENSE](LICENSE) for details.
+MIT License. See [LICENSE](LICENSE) for details.
 
----
-
-<div align="center">
-
-**⭐ If this project helped you, please give it a Star! ⭐**
-
-</div>
-
-> I think it would be incredibly useful if developers at AI startups like Google, OpenAI, Claude, XAI, Grok, and others added this feature.
-
-<div align="center">
-
-| 👤 **Developer** | ✉️ **Email** |
+| 👤 Developer | ✉️ Email |
 |:---:|:---:|
 | Zanviq | zanviq.dev@gmail.com |
-
-</div>

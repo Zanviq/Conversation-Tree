@@ -44,12 +44,7 @@ const main = async () => {
   await page.getByPlaceholder('Username').waitFor();
   await shot(page, 'landing-login');
 
-  // 2. Create account tab
-  await page.getByRole('button', { name: 'Create account' }).first().click();
-  await shot(page, 'create-account');
-  await page.getByRole('button', { name: 'Sign in' }).first().click();
-
-  // 3. Sign in with the demo account -> main screen (chat + conversation map)
+  // 2. Sign in with the demo account -> main screen (chat + conversation map)
   await page.getByPlaceholder('Username').fill(DEMO.username);
   await page.getByPlaceholder('Password').fill(DEMO.password);
   await page.getByRole('button', { name: 'Sign in' }).last().click();
@@ -58,24 +53,24 @@ const main = async () => {
   await page.getByText('Track A').first().waitFor();
   await shot(page, 'main-timeline-compare');
 
-  // 4. Read-only view of a compared track
+  // 3. Read-only view of a compared track
   await page.getByRole('button', { name: /Track A/ }).first().click();
   await page.getByText('Historical Track').waitFor();
   await shot(page, 'track-view');
   await page.keyboard.press('Escape');
   await page.mouse.click(10, 10);
 
-  // 5. Connected memory between branches
+  // 4. Connected memory between branches
   await openConversation(page, 'Explain "The Prince" by Machiavelli');
   await page.getByText('Does this idea still apply to modern leadership?').first().waitFor();
   await shot(page, 'connected-memory');
 
-  // 6. Branching conversation map
+  // 5. Branching conversation map
   await openConversation(page, 'Plan a 3-day trip to Kyoto');
   await page.getByText('Make it more focused on food instead.').first().waitFor();
   await shot(page, 'branching-map');
 
-  // 7. Model selection menu
+  // 6. Model selection menu
   await page.getByTitle('Select Model').click();
   await page.getByText('Conversation Model').waitFor();
   // Move the pointer off the button so its hover tooltip does not cover the menu
@@ -83,7 +78,7 @@ const main = async () => {
   await shot(page, 'model-select');
   await page.mouse.click(700, 450);
 
-  // 8. Gemini API key settings (empty – no key is ever typed here)
+  // 7. Gemini API key settings (empty – no key is ever typed here)
   await page.getByRole('button', { name: 'Add API key' }).click();
   await page.getByText('Get a free API key from Google AI Studio').waitFor();
   await shot(page, 'api-key-settings');

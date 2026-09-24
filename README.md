@@ -14,7 +14,14 @@
 
 > *"A conversation is not a simple linear record, but an infinitely branching tree of possibilities."*
 
-<!-- TODO: 개발 동기 -->
+In our daily lives, large language models provide us with a wealth of knowledge. As someone who is naturally curious, I often ask Google AI many questions instead of just using Google Search. Almost all AI platforms use a *"chat room"* format. While this provides a great opportunity to ask an AI in-depth questions about a single topic, I felt something was missing, and that missing piece became an inconvenience.
+
+Specifically, AI often tries to provide a lot of information at once. For example, if it explains things using numbered lists like 1, 2, and 3, I might ask follow-up questions about point 1, but then find it difficult to navigate back to point 2 later.
+
+Previously, to compensate for the AI's lack of long-term memory, I came up with and built a "Hierarchical Semantic Memory System." Expanding on that idea, I wanted to create a chat interface for this project where **memories are separated by tracks, allowing you to converse within the specific memory context you want.**
+
+That's how I planned this project.
+I hope many people find this feature useful. Please note that this project is not hosted as a service.
 
 ---
 

@@ -14,7 +14,14 @@
 
 > *"Una conversación no es un simple registro lineal, sino un árbol de posibilidades que se ramifica infinitamente."*
 
-<!-- TODO: 개발 동기 -->
+En nuestra vida diaria, los grandes modelos de lenguaje nos proporcionan una gran cantidad de conocimientos. Como alguien naturalmente curioso, a menudo le hago muchas preguntas a Google AI en lugar de usar simplemente la Búsqueda de Google. Casi todas las plataformas de IA utilizan un formato de *"sala de chat"*. Si bien esto brinda una gran oportunidad para hacerle preguntas profundas a una IA sobre un solo tema, sentí que faltaba algo, y esa pieza faltante se convirtió en un inconveniente.
+
+Específicamente, la IA a menudo intenta proporcionar mucha información a la vez. Por ejemplo, si explica las cosas usando listas numeradas como 1, 2 y 3, podría hacer preguntas de seguimiento sobre el punto 1, pero luego me resultaría difícil volver al punto 2 más tarde.
+
+Anteriormente, para compensar la falta de memoria a largo plazo de la IA, se me ocurrió y construí un "Sistema de Memoria Semántica Jerárquica". Ampliando esa idea, quería crear una interfaz de chat para este proyecto donde **los recuerdos estén separados por pistas, lo que te permite conversar dentro del contexto de memoria específico que desees.**
+
+Así es como planeé este proyecto.
+Espero que muchas personas encuentren útil esta función. Ten en cuenta que este proyecto no está alojado como un servicio.
 
 ---
 

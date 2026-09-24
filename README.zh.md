@@ -1,188 +1,186 @@
-<div align="center">
-
 # 🌳 Conversation-Tree
 
-**像探索树一样探索对话**
+**一个可以从任意消息分出新对话分支、并以树状图展示其结构的聊天界面。**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://react.dev/) [![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/) [![Express](https://img.shields.io/badge/Express-000000?logo=express&logoColor=white)](https://expressjs.com/) [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/) [![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 
-[English](./README.md) | [日本語](./README.ja.md) | [한국어](./README.ko.md) | **中文** | [Español](./README.es.md)
+[English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md) | **中文** | [Español](README.es.md)
 
-<img src="https://img.shields.io/badge/Powered%20by-Google%20Gemini-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Powered by Gemini"/>
-
-</div>
+[![Powered by Gemini](https://img.shields.io/badge/Powered%20by-Google%20Gemini-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev)
 
 ---
 
-## 💭 开发者寄语
+## 💭 Developer's Note
 
 > *"对话不仅仅是简单的线性记录，而是无限分支的可能性的树。"*
 
-在我们的日常生活中，大型语言模型为我们提供了大量的知识。作为一个平时就充满好奇心的人，我经常向 Google AI 提问，而不是仅仅使用 Google 搜索。几乎所有的 AI 网站都使用 *"聊天室"* 的形式。当然，这为我们提供了一个很好的机会，可以就一个主题集中向 AI 提问。然而，我在这方面感觉到了一些不足，而这种不足逐渐变成了一种不便。
-
-特别是，AI 经常试图一次性向我提供大量信息。例如，如果它用 1. 2. 3. 这样的编号来解释，我可能会继续针对第 1 点提问，但如果之后需要回到第 2 点，就会变得很麻烦。
-
-以前，为了弥补 AI 缺乏长期记忆的缺点，我曾构思并制作过一个“分层语义记忆系统”。在这个项目上，我扩展了这个想法，希望制作一个**将记忆按轨道分离，并允许在所需的记忆上下文中进行对话**的聊天室。
-
-因此，我策划了如下的项目。
-我希望很多人能使用这个功能，但本项目不提供单独的托管服务。
+<!-- TODO: 개발 동기 -->
 
 ---
 
-## ✨ 主要功能
+## ✨ Features
 
-### 🌳 多重宇宙分支 (Multiverse Branching)
-- 从任何消息创建新的对话分支
-- 所有分支的上下文保持独立
-- "Edit & Fork" 功能：修改过去的问题并探索新路径
+### 🌳 对话分支
+- 用户消息和 AI 回答都以带有 `parentId` / `childrenIds` 的节点保存，因此一个对话就是一棵树
+- 用 **Focus** 把之前的某个回答设为当前位置（head），下一条消息就会从那里开出新的分支
+- **Edit** 替换问题并重新生成回答；**Edit & Fork** 保留原问题，把修改后的问题作为兄弟分支添加
+- 发送给 AI 的只有从根节点到当前 head 路径上的消息
 
-### 🔗 记忆连接 (Context Injection)
-- 在不同的对话路径之间共享记忆
-- 将 Track A 的上下文注入到 Track B
-- 支持复杂想法的交叉引用
+### 🔗 记忆连接
+- 用 **Connect Memory** 把其他分支的节点连接到当前分支
+- 发送时，被连接分支的消息（从共同祖先往下）会作为 "Connected Memory" 块加在提示词前面
+- 连接在地图上以虚线显示，可用 **Delete Connection** 删除
 
-### 🗺️ 交互式宇宙地图
-- 基于 D3.js 的实时对话可视化
-- 自由拖动调整节点位置
-- 缩放/平移以探索整个对话结构
-- 自动重新居中到当前位置
+### 📊 时间线比较
+- 点击比较按钮进入轨道选择模式，在地图中选择叶子节点作为 Track B、C……
+- 所选每条轨道的完整对话内容会作为上下文加入问题
+- 附加的轨道以徽章形式显示在消息上，并可在只读视图中打开
 
-### ⚡ Gemini 3 集成
-- 支持 Google Gemini 3 Flash/Pro 模型
-- 实时流式响应
-- 图像附件和多模态对话
+### 🗺️ 对话地图
+- 在聊天旁边用 D3.js 树展示问题/回答对
+- 支持缩放、平移、拖动节点以及回到当前节点；拖动后的位置会被保存
+- 节点名称是 Gemini 生成的简短摘要（没有密钥时使用问题的前几个词）
 
-### 📊 轨道比较模式
-- 同时选择多个对话路径
-- AI 分析并比较选定的轨道
-- 探索平行时间线
+### ⚡ Gemini 回答
+- 通过 `@google/genai` 在浏览器中直接调用，以流式方式显示回答
+- 回答和标签可分别选择 Gemini 3 Flash / Pro 模型
+- 图片附件（选择文件或粘贴）以 inline data 发送
+
+### 👤 账号与存储
+- 使用用户名和密码注册 / 登录（bcrypt 哈希，JWT 存放在 httpOnly Cookie 中）
+- 对话、当前选中的对话和模型选择按用户保存在 PostgreSQL 中
+- 不会在每个流式片段时都保存，而是按固定间隔只发送有变化的对话
 
 ---
 
-## 🚀 快速开始
+## 🚀 Getting Started
 
-### 前置要求
-- Node.js 18+
-- [Google Gemini API Key](https://aistudio.google.com/app/apikey)
+### Prerequisites
+- [Docker](https://docs.docker.com/get-docker/) 和 Docker Compose
+- （可选，用于 AI 回答）[Google Gemini API 密钥](https://aistudio.google.com/apikey)
 
-### 安装
+### 运行
 
 ```bash
-# 克隆仓库
 git clone https://github.com/Zanviq/Conversation-Tree.git
 cd Conversation-Tree
-
-# 安装依赖
-npm install
-
-# 运行开发服务器
-npm run dev
+cp .env.example .env
+docker compose up
 ```
 
-### 构建
+打开 http://localhost:8080（如果端口被占用，请修改 `.env` 中的 `WEB_PORT`）。
 
-```bash
-# 生产环境构建
-npm run build
+首次启动时，服务器会执行数据库迁移，并创建一个带示例对话的演示账号。
 
-# 预览
-npm run preview
-```
+### 演示账号
 
-### API 密钥设置
+| 用户名 | 密码 |
+|----------|----------|
+| `demo` | `demo1234` |
 
-1. 启动应用时，在 Landing Page 输入 Gemini API Key
-2. 密钥将安全地存储在浏览器的本地存储中
-3. 下次访问时自动加载
+### Gemini API 密钥
+没有密钥也可以登录并浏览所有对话、地图和轨道视图。发送消息、**Edit** 和 **Edit & Fork** 在输入密钥之前处于禁用状态。
+
+1. 点击输入框上方的 **Add API key**（或侧边栏中的 **Gemini API Key**）
+2. 粘贴密钥并点击 **Validate & Save**
+3. 密钥只保存在浏览器的 localStorage 中并直接发送给 Google，不会发送到本应用的服务器
 
 ---
 
-## 🛠️ 技术栈
+## 🛠️ Tech Stack
 
-| 分类 | 技术 |
-|------|------|
-| **Frontend** | React 19, TypeScript |
+| Category | Technology |
+|----------|-----------|
+| **Frontend** | React 19, TypeScript, Vite 6 |
 | **Visualization** | D3.js 7 |
 | **Styling** | Tailwind CSS |
-| **AI** | Google Gemini API |
-| **Build** | Vite |
 | **Markdown** | react-markdown |
+| **AI** | Google Gemini API（`@google/genai`，在浏览器中调用） |
+| **Backend** | Node.js 22, Express 5 |
+| **Database** | PostgreSQL 16, Drizzle ORM, drizzle-kit |
+| **Auth** | bcryptjs, jsonwebtoken（httpOnly Cookie） |
+| **Infra** | Docker Compose, nginx |
+| **Screenshots** | Playwright |
 
 ---
 
-## 📁 项目结构
+## 📁 Project Structure
 
 ```
-conversation-tree/
+Conversation-Tree/
 ├── 📂 components/
-│   ├── ChatInterface.tsx    # 聊天 UI 和消息渲染
-│   ├── UniverseMap.tsx      # 基于 D3.js 的对话可视化
-│   └── LandingPage.tsx      # API 密钥输入和引导
+│   ├── ChatInterface.tsx       # 对话线程、消息操作、输入框、API 密钥提示
+│   ├── UniverseMap.tsx         # D3 对话地图（拖动、缩放、连接、轨道）
+│   ├── LandingPage.tsx         # 落地页与登录/注册
+│   └── ApiKeyModal.tsx         # Gemini API 密钥输入（仅保存在浏览器）
 ├── 📂 services/
-│   ├── geminiService.ts     # Gemini API 集成
-│   └── storageService.ts    # 本地/浏览器存储管理
+│   ├── apiClient.ts            # fetch 封装与认证 API 调用
+│   ├── apiKeyStore.ts          # localStorage 中的 Gemini 密钥管理
+│   ├── geminiService.ts        # 流式回答、密钥验证、节点标签
+│   └── storageService.ts       # 与服务器同步对话和设置
 ├── 📂 utils/
-│   └── graphUtils.ts        # 图遍历和树构建
-├── 📂 conversation-tree-data/     # 会话数据（自动生成）
-├── App.tsx                  # 主应用组件
-├── types.ts                 # TypeScript 类型定义
-└── vite.config.ts           # Vite 配置和 API 插件
+│   └── graphUtils.ts           # 构建线程、记忆连接、树层级转换
+├── 📂 server/
+│   ├── 📂 drizzle/             # SQL 迁移
+│   ├── 📂 src/
+│   │   ├── 📂 db/              # 表结构、迁移执行、演示 seed
+│   │   ├── 📂 routes/          # /api/auth, /api/conversations, /api/settings
+│   │   ├── auth.ts             # 密码哈希与会话 Cookie
+│   │   └── index.ts            # Express 入口（迁移 → seed → 启动）
+│   └── Dockerfile
+├── 📂 docker/
+│   └── nginx.conf              # 提供 Web 构建并代理 /api
+├── 📂 scripts/
+│   └── 📂 capture-screenshots/ # 用于 README 截图的 Playwright 脚本
+├── 📂 image/                   # 截图
+├── App.tsx                     # 应用状态、分支逻辑、布局
+├── types.ts                    # Session / Message 类型
+├── Dockerfile                  # Web 镜像（Vite 构建 → nginx）
+├── docker-compose.yml          # db, server, web
+└── .env.example
 ```
 
 ---
 
-## 💡 使用方法
+## 💡 How to Use
 
-1. **开始新对话**: 在左侧侧边栏点击 "New Chat"
-2. **创建分支**: 在宇宙地图中点击节点 → 选择 "Focus / View" → 输入新消息
-3. **连接记忆**: 点击节点 → "Connect Memory" → 选择目标节点
-4. **比较轨道**: 点击底部的 GitMerge 图标 → 选择要比较的叶子节点 → 输入问题
-5. **调整布局**: 拖动节点到所需位置（自动保存）
+1. **登录**：在落地页使用演示账号登录，或创建新账号
+2. **开始对话**：点击 **New Chat** 并发送消息（需要 Gemini API 密钥）
+3. **分支**：将鼠标移到回答上点击 **Focus**，或点击地图中的节点 → **Focus / View**，然后发送新消息
+4. **Edit & Fork**：修改之前的问题，并把两个版本保留为不同的分支
+5. **连接记忆**：点击节点 → **Connect Memory** → 选择目标节点
+6. **比较时间线**：点击输入框旁的比较按钮，在地图中选择叶子节点，然后提问
+7. **整理地图**：拖动节点，位置会随对话一起保存
 
 ---
 
-## 🎨 屏幕截图
+## 🎨 Screenshots
 
-<div align="center">
-<i>以下是一些简单的示例截图。</i>
-
-![Screenshot](image/LandingPage.png)
+<p align="center">
+  <img src="image/main-timeline-compare.png" alt="显示时间线比较的主界面" width="100%">
+</p>
 
 <table>
   <tr>
-    <td><img src="image/Chat_1.png" width="400"/></td>
-    <td><img src="image/Chat_2.png" width="400"/></td>
+    <td align="center"><img src="image/landing-login.png" alt="落地页与登录"><br><sub>落地页 / 登录</sub></td>
+    <td align="center"><img src="image/track-view.png" alt="轨道视图"><br><sub>只读轨道视图</sub></td>
   </tr>
   <tr>
-    <td><img src="image/Chat_3.png" width="400"/></td>
-    <td><img src="image/Chat_4.png" width="400"/></td>
+    <td align="center"><img src="image/connected-memory.png" alt="记忆连接"><br><sub>记忆连接</sub></td>
+    <td align="center"><img src="image/branching-map.png" alt="分支地图"><br><sub>分支地图</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="image/model-select.png" alt="模型选择"><br><sub>模型选择</sub></td>
+    <td align="center"><img src="image/api-key-settings.png" alt="API 密钥设置"><br><sub>Gemini API 密钥设置</sub></td>
   </tr>
 </table>
-</div>
 
 ---
 
-## 📝 许可证
+## 📝 License
 
-本项目基于 MIT 许可证分发。详情请参阅 [LICENSE](LICENSE) 文件。
+MIT License。详情请参阅 [LICENSE](LICENSE)。
 
----
-
-<div align="center">
-
-**⭐ 如果这个项目对您有帮助，请给一个 Star！ ⭐**
-
-</div>
-
-> 我认为如果 Google、OpenAI、Claude、XAI、Grok 等众多 AI 初创公司的开发者们能添加这个功能，将会非常有用。
-
-<div align="center">
-
-| 👤 **开发者** | ✉️ **电子邮件** |
+| 👤 Developer | ✉️ Email |
 |:---:|:---:|
-| Zanviq | Zanviq.dev@gmail.com |
-
-</div>
+| Zanviq | zanviq.dev@gmail.com |

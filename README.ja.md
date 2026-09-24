@@ -1,198 +1,186 @@
-<div align="center">
-
 # 🌳 Conversation-Tree
 
-**会話をツリーのように探検しよう**
+**メッセージごとに会話を枝分かれさせ、その構造をツリーマップで表示するチャットインターフェースです。**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/) [![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://react.dev/) [![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/) [![Express](https://img.shields.io/badge/Express-000000?logo=express&logoColor=white)](https://expressjs.com/) [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/) [![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 
-[English](./README.md) | **日本語** | [한국어](./README.ko.md) | [中文](./README.zh.md) | [Español](./README.es.md)
+[English](README.md) | [한국어](README.ko.md) | **日本語** | [中文](README.zh.md) | [Español](README.es.md)
 
-<img src="https://img.shields.io/badge/Powered%20by-Google%20Gemini-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Powered by Gemini"/>
-
-</div>
+[![Powered by Gemini](https://img.shields.io/badge/Powered%20by-Google%20Gemini-4285F4?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev)
 
 ---
 
-## 💭 開発者の想い
+## 💭 Developer's Note
 
 > *「単なる線形の記録ではなく、無限に分岐する可能性の会話です。」*
 
-私たちの日常において、大規模言語モデルは多くの知識を提供してくれます。特に普段から好奇心旺盛な私は、Google検索の代わりにGoogle AIに多くの質問をします。ほぼすべてのAIサイトでは「*チャットルーム*」形式が採用されています。もちろん、これは私たちが一つのテーマについて集中的にAIに質問できる良い機会を提供してくれます。しかし、私はこの部分に少し物足りなさを感じ、その物足りなさが不便さとして迫ってきました。
-
-特にAIは、一度に多くの情報を私に提供しようとします。例えば、1. 2. 3. のように番号を付けて説明されると、私は1番について質問を続けた後、再び2番に戻らなければならない場合に困ってしまいます。
-
-以前、私はAIの不足している長期記憶を補うために「階層的意味記憶システム」というアイデアを思いつき、制作してみた経験がありました。そのアイデアを拡張し、このプロジェクトでは**記憶をトラック別に分離し、希望する記憶の中で会話ができるように**チャットルームを制作したいと考えました。
-
-そうして、私は以下のようなプロジェクトを企画しました。
-多くの人にこの機能を使ってもらいたいと願っていますが、このプロジェクトは別途ホスティングして提供することはありません。
+<!-- TODO: 개발 동기 -->
 
 ---
 
-## ✨ 主な機能
+## ✨ Features
 
-### 🌳 マルチバースブランチング
-- どのメッセージからでも新しい会話分岐を作成
-- すべての分岐のコンテキストが独立して維持
-- 「Edit & Fork」機能で過去の質問を修正し、新しいパスを探索
+### 🌳 会話の分岐
+- ユーザーのメッセージとAIの回答を `parentId` / `childrenIds` を持つノードとして保存するため、1つの会話がツリーになる
+- **Focus** で以前の回答を現在位置（head）にすると、次のメッセージはそこから新しい枝として続く
+- **Edit** は質問を置き換えて回答を再生成し、**Edit & Fork** は元の質問を残したまま、編集した質問を兄弟の枝として追加する
+- AIにはルートから現在のheadまでの経路上のメッセージだけが送られる
 
-### 🔗 メモリ接続（コンテキストインジェクション）
-- 異なる会話パス間でメモリを共有
-- トラックAのコンテキストをトラックBに注入
-- 複雑なアイデアの相互参照が可能
+### 🔗 記憶の接続
+- **Connect Memory** で別の枝のノードを現在の枝に接続する
+- 送信時、接続した枝のメッセージ（共通の祖先以降）を「Connected Memory」ブロックとしてプロンプトの前に付ける
+- 接続はマップ上に点線で表示され、**Delete Connection** で解除できる
 
-### 🗺️ インタラクティブ宇宙マップ
-- D3.jsベースのリアルタイム会話可視化
-- ドラッグでノード位置を自由に調整
-- ズーム/パンで会話構造全体を探索
-- 現在位置への自動リセンタリング
+### 📊 タイムライン比較
+- 比較ボタンでトラック選択モードに切り替え、マップの末端ノードを Track B, C, … として選ぶ
+- 選択した各トラックの会話全文が質問にコンテキストとして追加される
+- 添付されたトラックはメッセージにバッジで表示され、読み取り専用の画面で開ける
 
-### ⚡ Gemini 3統合
-- Google Gemini 3 Flash/Proモデルサポート
-- リアルタイムストリーミングレスポンス
-- 画像添付とマルチモーダル会話
+### 🗺️ 会話マップ
+- チャットの横に質問/回答のペアを D3.js のツリーで表示
+- ズーム、パン、ノードのドラッグ、現在ノードへの再センタリングに対応。ドラッグした位置は保存される
+- ノード名は Gemini が生成した短い要約（キーがない場合は質問の先頭の単語）
 
-### 📊 トラック比較モード
-- 複数の会話パスを同時に選択
-- AIが選択されたトラックを比較分析
-- 並列タイムラインの探索
+### ⚡ Gemini の回答
+- `@google/genai` でブラウザから直接呼び出し、回答をストリーミングで表示
+- 回答用とラベル用のモデルを Gemini 3 Flash / Pro からそれぞれ選択
+- 画像の添付（ファイル選択または貼り付け）は inline data として送信
+
+### 👤 アカウントと保存
+- ユーザー名とパスワードによる登録・ログイン（bcrypt ハッシュ、httpOnly Cookie に JWT）
+- 会話、選択中の会話、モデル選択をユーザーごとに PostgreSQL に保存
+- ストリーミングのチャンクごとには保存せず、変更された会話だけを一定間隔で送信
 
 ---
 
-## 🚀 はじめに
+## 🚀 Getting Started
 
-### 前提条件
-- Node.js 18+
-- [Google Gemini APIキー](https://aistudio.google.com/app/apikey)
+### Prerequisites
+- [Docker](https://docs.docker.com/get-docker/) と Docker Compose
+- （任意、AI回答用）[Google Gemini API キー](https://aistudio.google.com/apikey)
 
-### インストール
+### 実行
 
 ```bash
-# リポジトリをクローン
 git clone https://github.com/Zanviq/Conversation-Tree.git
 cd Conversation-Tree
-
-# 依存関係をインストール
-npm install
-
-# 開発サーバーを起動
-npm run dev
+cp .env.example .env
+docker compose up
 ```
 
-### ビルド
+http://localhost:8080 を開きます（ポートが使用中の場合は `.env` の `WEB_PORT` を変更）。
 
-```bash
-# プロダクションビルド
-npm run build
+初回起動時にサーバーがDBマイグレーションを適用し、サンプル会話入りのデモアカウントを作成します。
 
-# プレビュー
-npm run preview
-```
+### デモアカウント
 
-### APIキーの設定
+| ユーザー名 | パスワード |
+|----------|----------|
+| `demo` | `demo1234` |
 
-1. アプリ起動時のランディングページでGemini APIキーを入力
-2. キーはブラウザのローカルストレージに安全に保存
-3. 次回アクセス時に自動ロード
+### Gemini API キー
+キーがなくてもログインして、すべての会話、マップ、トラック画面を閲覧できます。送信、**Edit**、**Edit & Fork** はキーを入力するまで無効になります。
+
+1. 入力欄の上の **Add API key**（またはサイドバーの **Gemini API Key**）をクリック
+2. キーを貼り付けて **Validate & Save** をクリック
+3. キーはブラウザの localStorage にのみ保存され、Google に直接送信される。このアプリのサーバーには送信されない
 
 ---
 
-## 🛠️ 技術スタック
+## 🛠️ Tech Stack
 
-| カテゴリ | 技術 |
-|----------|------|
-| **Frontend** | React 19, TypeScript |
+| Category | Technology |
+|----------|-----------|
+| **Frontend** | React 19, TypeScript, Vite 6 |
 | **Visualization** | D3.js 7 |
 | **Styling** | Tailwind CSS |
-| **AI** | Google Gemini API |
-| **Build** | Vite |
 | **Markdown** | react-markdown |
+| **AI** | Google Gemini API（`@google/genai`、ブラウザから呼び出し） |
+| **Backend** | Node.js 22, Express 5 |
+| **Database** | PostgreSQL 16, Drizzle ORM, drizzle-kit |
+| **Auth** | bcryptjs, jsonwebtoken（httpOnly Cookie） |
+| **Infra** | Docker Compose, nginx |
+| **Screenshots** | Playwright |
 
 ---
 
-## 📁 プロジェクト構造
+## 📁 Project Structure
 
 ```
-conversation-tree/
+Conversation-Tree/
 ├── 📂 components/
-│   ├── ChatInterface.tsx    # チャットUIとメッセージレンダリング
-│   ├── UniverseMap.tsx      # D3.jsベースの会話可視化
-│   └── LandingPage.tsx      # APIキー入力とオンボーディング
+│   ├── ChatInterface.tsx       # 会話スレッド、メッセージ操作、入力欄、APIキーの案内
+│   ├── UniverseMap.tsx         # D3 会話マップ（ドラッグ、ズーム、接続、トラック）
+│   ├── LandingPage.tsx         # ランディングページとログイン/登録
+│   └── ApiKeyModal.tsx         # Gemini API キー入力（ブラウザにのみ保存）
 ├── 📂 services/
-│   ├── geminiService.ts     # Gemini API統合
-│   └── storageService.ts    # ローカル/ブラウザストレージ管理
+│   ├── apiClient.ts            # fetch ラッパーと認証API呼び出し
+│   ├── apiKeyStore.ts          # localStorage の Gemini キー管理
+│   ├── geminiService.ts        # ストリーミング回答、キー検証、ノードラベル
+│   └── storageService.ts       # 会話・設定をサーバーと同期
 ├── 📂 utils/
-│   └── graphUtils.ts        # グラフ走査とツリー構築
-├── 📂 conversation-tree-data/     # セッションデータ（自動生成）
-├── App.tsx                  # メインアプリコンポーネント
-├── types.ts                 # TypeScript型定義
-└── vite.config.ts           # Vite設定とAPIプラグイン
+│   └── graphUtils.ts           # スレッド構築、記憶の接続、ツリー階層への変換
+├── 📂 server/
+│   ├── 📂 drizzle/             # SQL マイグレーション
+│   ├── 📂 src/
+│   │   ├── 📂 db/              # スキーマ、マイグレーション実行、デモ seed
+│   │   ├── 📂 routes/          # /api/auth, /api/conversations, /api/settings
+│   │   ├── auth.ts             # パスワードハッシュとセッションCookie
+│   │   └── index.ts            # Express エントリ（マイグレーション → seed → 起動）
+│   └── Dockerfile
+├── 📂 docker/
+│   └── nginx.conf              # Web ビルドの配信と /api のプロキシ
+├── 📂 scripts/
+│   └── 📂 capture-screenshots/ # README スクリーンショット用 Playwright スクリプト
+├── 📂 image/                   # スクリーンショット
+├── App.tsx                     # アプリの状態、分岐ロジック、レイアウト
+├── types.ts                    # Session / Message の型
+├── Dockerfile                  # Web イメージ（Vite ビルド → nginx）
+├── docker-compose.yml          # db, server, web
+└── .env.example
 ```
 
 ---
 
-## 💡 使い方
+## 💡 How to Use
 
-1. **新しい会話を開始**: 左サイドバーで「New Chat」をクリック
-2. **分岐を作成**: 宇宙マップでノードをクリック → 「Focus / View」を選択 → 新しいメッセージを入力
-3. **メモリを接続**: ノードをクリック → 「Connect Memory」 → 接続先ノードを選択
-4. **トラックを比較**: 下部のGitMergeアイコンをクリック → 比較するリーフノードを選択 → 質問を入力
-5. **レイアウト調整**: ノードをドラッグして希望の位置に移動（自動保存）
+1. **ログイン**: ランディングページでデモアカウントでログインするか、アカウントを作成
+2. **会話を始める**: **New Chat** を押してメッセージを送信（Gemini API キーが必要）
+3. **分岐**: 回答にマウスを乗せて **Focus** を押すか、マップのノードをクリック → **Focus / View** の後、新しいメッセージを送信
+4. **Edit & Fork**: 以前の質問を編集し、両方のバージョンを別々の枝として残す
+5. **記憶の接続**: ノードをクリック → **Connect Memory** → 対象ノードを選択
+6. **タイムライン比較**: 入力欄の横の比較ボタンを押し、マップで末端ノードを選んでから質問
+7. **マップの整理**: ノードをドラッグすると、位置が会話と一緒に保存される
 
 ---
 
-## 🤝 コントリビューション
+## 🎨 Screenshots
 
-コントリビューションは大歓迎です！バグ報告、機能提案、PRをお待ちしています。
-
-1. このリポジトリをFork
-2. Featureブランチを作成 (`git checkout -b feature/amazing-feature`)
-3. 変更をコミット (`git commit -m 'Add amazing feature'`)
-4. ブランチにPush (`git push origin feature/amazing-feature`)
-5. Pull Requestを作成
-
-## 🎨 スクリーンショット
-
-<div align="center">
-<i>簡単な例のスクリーンショットです。</i>
-
-![Screenshot](image/LandingPage.png)
+<p align="center">
+  <img src="image/main-timeline-compare.png" alt="タイムライン比較を表示したメイン画面" width="100%">
+</p>
 
 <table>
   <tr>
-    <td><img src="image/Chat_1.png" width="400"/></td>
-    <td><img src="image/Chat_2.png" width="400"/></td>
+    <td align="center"><img src="image/landing-login.png" alt="ランディングとログイン"><br><sub>ランディング / ログイン</sub></td>
+    <td align="center"><img src="image/track-view.png" alt="トラック表示"><br><sub>読み取り専用のトラック表示</sub></td>
   </tr>
   <tr>
-    <td><img src="image/Chat_3.png" width="400"/></td>
-    <td><img src="image/Chat_4.png" width="400"/></td>
+    <td align="center"><img src="image/connected-memory.png" alt="記憶の接続"><br><sub>記憶の接続</sub></td>
+    <td align="center"><img src="image/branching-map.png" alt="分岐マップ"><br><sub>分岐マップ</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="image/model-select.png" alt="モデル選択"><br><sub>モデル選択</sub></td>
+    <td align="center"><img src="image/api-key-settings.png" alt="APIキー設定"><br><sub>Gemini API キー設定</sub></td>
   </tr>
 </table>
-</div>
 
 ---
 
-## 📝 ライセンス
+## 📝 License
 
-このプロジェクトはMITライセンスの下で配布されています。詳細は[LICENSE](LICENSE)ファイルを参照してください。
+MIT License. 詳細は [LICENSE](LICENSE) をご覧ください。
 
----
-
-<div align="center">
-
-**⭐ このプロジェクトが役に立ったら、Starをお願いします！ ⭐**
-
-</div>
-
-> Google、OpenAI、Claude、XAI、Grok...など、多くのAIスタートアップの開発者の方々がこの機能を追加してくだされば、非常に便利に使えると思います。
-
-<div align="center">
-
-| 👤 **開発者** | ✉️ **メール** |
+| 👤 Developer | ✉️ Email |
 |:---:|:---:|
 | Zanviq | zanviq.dev@gmail.com |
-
-</div>
